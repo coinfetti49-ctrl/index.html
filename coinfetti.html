@@ -46,6 +46,18 @@
         }
         
         .nav-link:hover { opacity: 0.6; }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -6px;
+            left: 0;
+            background-color: var(--coinfetti-blue);
+            transition: width 0.3s ease;
+        }
+        .nav-link.active-nav::after { width: 100%; }
 
         .custom-radio:checked + div, .custom-checkbox:checked + div {
             border-color: var(--coinfetti-blue);
@@ -99,27 +111,27 @@
         <div class="bg-[#fff975] border-y border-[#063c52]/10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
                 <nav class="flex items-center space-x-10">
-                    <button onclick="switchView('home')" class="nav-link text-[#063c52]">Home Page</button>
+                    <button onclick="switchView('home')" class="nav-link active-nav text-[#063c52]" id="nav-home">Home Page</button>
                     
                     <div class="relative dropdown">
-                        <button class="nav-link text-[#063c52] flex items-center">About <span class="ml-1 text-[8px]">&#x25BC;</span></button>
+                        <button class="nav-link text-[#063c52] flex items-center" id="nav-about">About <span class="ml-1 text-[8px]">&#x25BC;</span></button>
                         <div class="dropdown-menu absolute hidden bg-white border-2 border-[#063c52] mt-0 py-2 w-48 rounded-xl shadow-xl z-50">
                             <button onclick="switchView('about')" class="block w-full text-left px-5 py-3 hover:bg-[#fff975] transition-all text-[10px] font-black uppercase">Our Story</button>
                             <button onclick="switchView('meet-mum')" class="block w-full text-left px-5 py-3 hover:bg-[#fff975] transition-all text-[10px] font-black uppercase">Meet Mom</button>
                         </div>
                     </div>
 
-                    <button onclick="switchView('posts')" class="nav-link text-[#063c52]">Posts</button>
+                    <button onclick="switchView('posts')" class="nav-link text-[#063c52]" id="nav-posts">Posts</button>
                     
                     <div class="relative dropdown">
-                        <button class="nav-link text-[#063c52] flex items-center">Services <span class="ml-1 text-[8px]">&#x25BC;</span></button>
+                        <button class="nav-link text-[#063c52] flex items-center" id="nav-pricing">Services <span class="ml-1 text-[8px]">&#x25BC;</span></button>
                         <div class="dropdown-menu absolute hidden bg-white border-2 border-[#063c52] mt-0 py-2 w-48 rounded-xl shadow-xl z-50">
                             <button onclick="switchView('pricing')" class="block w-full text-left px-5 py-3 hover:bg-[#fff975] transition-all text-[10px] font-black uppercase">Pricing Explorer</button>
                         </div>
                     </div>
 
                     <button onclick="window.open('https://coinfetti4.wordpress.com/miss-me-already/', '_blank')" class="nav-link text-[#063c52]">Newsletter</button>
-                    <button onclick="switchView('chat')" class="nav-link text-[#063c52]">Contact Us</button>
+                    <button onclick="switchView('chat')" class="nav-link text-[#063c52]" id="nav-chat">Contact Us</button>
                 </nav>
 
                 <div class="flex items-center space-x-6">
@@ -139,7 +151,7 @@
                 <span class="bg-[#fff975] px-4 shadow-[-10px_10px_0px_0px_#063c52]">well told</span><br>
                 is a business well managed.
             </h1>
-            <p class="text-xl font-medium text-stone-500 mb-14 max-w-2xl mx-auto italic leading-relaxed italic">High-end digital bookkeeping & financial storytelling for international SMEs.</p>
+            <p class="text-xl font-medium text-stone-500 mb-14 max-w-2xl mx-auto italic leading-relaxed">High-end digital bookkeeping & financial storytelling for international SMEs.</p>
             <div class="flex flex-wrap justify-center gap-6">
                 <button onclick="switchView('pricing')" class="bg-[#063c52] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl btn-hover transition-all">Explore Pricing</button>
                 <button onclick="switchView('about')" class="border-2 border-[#063c52] px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-[#fff975] transition-all">Read Our Story</button>
@@ -196,7 +208,7 @@
                     </div>
                     <div class="md:col-span-3 p-12 md:p-20 bg-white">
                         <h1 class="text-5xl font-black text-[#063c52] uppercase italic mb-8">MEET MOM</h1>
-                        <p class="text-2xl font-bold italic text-stone-400 mb-8 leading-relaxed italic">"Coins speak, and numbers are their words."</p>
+                        <p class="text-2xl font-bold italic text-stone-400 mb-8 leading-relaxed">"Coins speak, and numbers are their words."</p>
                         <div class="space-y-6 text-stone-600 leading-relaxed italic text-lg">
                             <p>Now, let me introduce you to my creator—Reham (you can call her my mom). She’s a passionate young graduate with 3 years of marketing experience and a strong background in accounting.</p>
                             <p>Reham graduated top of her class because of her love for numbers. She created me to share her thoughts and help the world see accounting differently—not as something boring, but as a living language.</p>
@@ -216,7 +228,7 @@
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center mb-16">
                 <h1 class="text-6xl font-black text-[#063c52] uppercase italic tracking-tighter">The Coin Builder</h1>
-                <p class="text-lg font-bold italic text-stone-400 mt-4 leading-relaxed italic italic">Select the confetti you need for your bank.</p>
+                <p class="text-lg font-bold italic text-stone-400 mt-4 leading-relaxed">Select the confetti you need for your bank.</p>
             </div>
 
             <div class="bg-white rounded-[4rem] shadow-[0_40px_120px_rgba(6,60,82,0.15)] border-4 border-[#063c52] overflow-hidden mb-28">
@@ -224,7 +236,7 @@
                     <div class="lg:col-span-7 p-10 md:p-16 bg-stone-50/40">
                         <div class="flex items-center space-x-6 mb-14">
                             <div class="w-4 h-14 bg-[#063c52] rounded-full shadow-lg"></div>
-                            <h2 class="text-4xl font-black text-[#063c52] uppercase italic tracking-tight italic">Interactive Calculator</h2>
+                            <h2 class="text-4xl font-black text-[#063c52] uppercase italic tracking-tight">Interactive Calculator</h2>
                         </div>
                         <div class="space-y-16" id="calculator-form">
                             <div>
@@ -333,12 +345,12 @@
                     <div id="tab-bookkeeping" class="tab-content active">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <div class="p-12 bg-[#fff975] border-2 border-[#063c52] rounded-[4rem]">
-                                <span class="font-black text-[#063c52] uppercase text-[11px] block mb-4 italic tracking-widest italic">Fixed Monthly</span>
-                                <div class="text-5xl font-black text-[#063c52] mb-6 tracking-tighter italic italic">$150/mo</div>
-                                <p class="text-lg font-bold italic mb-10 leading-relaxed italic">Standard maintenance for up to 50 transactions.</p>
+                                <span class="font-black text-[#063c52] uppercase text-[11px] block mb-4 italic tracking-widest">Fixed Monthly</span>
+                                <div class="text-5xl font-black text-[#063c52] mb-6 tracking-tighter italic">$150/mo</div>
+                                <p class="text-lg font-bold italic mb-10 leading-relaxed">Standard maintenance for up to 50 transactions.</p>
                                 <button onclick="switchView('chat')" class="text-xs font-black uppercase underline underline-offset-8">Custom high-volume pricing &rarr;</button>
                             </div>
-                            <div class="p-12 bg-stone-50 rounded-[4rem] border-2 border-stone-100 italic">
+                            <div class="p-12 bg-stone-50 rounded-[4rem] border-2 border-stone-100">
                                 <span class="font-black text-stone-400 uppercase text-[11px] block mb-6 italic">Standard Hourly Rates</span>
                                 <div class="space-y-6">
                                     <div class="flex justify-between border-b border-stone-200 pb-3 italic"><span class="font-bold">Bookkeeping</span><span class="font-black">$15/hr</span></div>
@@ -349,12 +361,12 @@
                         </div>
                     </div>
                     <div id="tab-tax" class="tab-content">
-                        <div class="bg-white border-4 border-stone-50 rounded-[4rem] overflow-hidden shadow-sm italic">
+                        <div class="bg-white border-4 border-stone-50 rounded-[4rem] overflow-hidden shadow-sm">
                             <table class="w-full text-left">
                                 <thead class="bg-[#063c52] text-white text-[11px] uppercase tracking-[0.5em] italic">
                                     <tr><th class="p-12">Local Tax Category</th><th class="p-12">Fee (USD)</th><th class="p-12">Compliance Detail</th></tr>
                                 </thead>
-                                <tbody class="text-lg font-bold text-[#063c52] italic">
+                                <tbody class="text-lg font-bold text-[#063c52]">
                                     <tr class="border-b-2 border-stone-50 bg-stone-50/30 italic"><td class="p-12 uppercase">VAT / WHT / Tourism</td><td class="p-12 font-black text-4xl">$30 - $50</td><td class="p-12 text-[11px] uppercase text-stone-400">Per Filing Period</td></tr>
                                     <tr class="border-b-2 border-stone-50 italic"><td class="p-12 uppercase">CIT: Real Regime</td><td class="p-12 font-black text-4xl">$100</td><td class="p-12 text-[11px] uppercase text-stone-400">Annual Return Filing</td></tr>
                                     <tr class="bg-stone-50/30 italic"><td class="p-12 uppercase">CIT: Lump Sum / IQP</td><td class="p-12 font-black text-4xl">$30</td><td class="p-12 text-[11px] uppercase text-stone-400">Quarterly Compliance</td></tr>
@@ -363,13 +375,13 @@
                         </div>
                     </div>
                     <div id="tab-advisory" class="tab-content">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 italic">
-                            <div class="bg-[#063c52] text-white p-16 rounded-[5rem] relative overflow-hidden group shadow-2xl italic">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div class="bg-[#063c52] text-white p-16 rounded-[5rem] relative overflow-hidden group shadow-2xl">
                                 <h4 class="text-[#fff975] font-black uppercase text-[11px] mb-8 italic">SaaS Integration</h4>
                                 <div class="text-5xl font-black mb-14 italic leading-none tracking-tight">System Global Implementation</div>
-                                <div class="flex items-baseline space-x-5 italic"><span class="text-8xl font-black text-[#fff975] tracking-tighter">$25</span><span class="text-stone-500 font-black uppercase text-xs">/ hour</span></div>
+                                <div class="flex items-baseline space-x-5"><span class="text-8xl font-black text-[#fff975] tracking-tighter italic">$25</span><span class="text-stone-500 font-black uppercase text-xs italic">/ hour</span></div>
                             </div>
-                            <div class="bg-[#fff975] p-16 border-4 border-[#063c52] rounded-[5rem] flex flex-col justify-between shadow-xl italic">
+                            <div class="bg-[#fff975] p-16 border-4 border-[#063c52] rounded-[5rem] flex flex-col justify-between shadow-xl">
                                 <h4 class="text-[#063c52] font-black uppercase text-[11px] mb-8 italic tracking-[0.2em]">One-Time Setup</h4>
                                 <div class="text-8xl font-black mb-6 text-[#063c52] tracking-tighter italic">$200 <span class="text-[11px] uppercase block font-black mt-4 tracking-[0.3em]">Fixed Setup Fee</span></div>
                             </div>
@@ -383,24 +395,24 @@
     <!-- INSIGHTS VIEW -->
     <section id="posts-view" class="view-section">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div class="text-center mb-24 italic">
-                <h1 class="text-7xl font-black text-[#063c52] uppercase italic tracking-tighter mb-6 italic">Financial Stories</h1>
-                <p class="text-2xl font-bold italic text-stone-400 italic italic">Education, Strategy, and Digital Transformation.</p>
+            <div class="text-center mb-24">
+                <h1 class="text-7xl font-black text-[#063c52] uppercase italic tracking-tighter mb-6">Financial Stories</h1>
+                <p class="text-2xl font-bold italic text-stone-400 italic">Education, Strategy, and Digital Transformation.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 italic">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                 <a href="https://coinfetti4.wordpress.com/2026/01/14/stop-the-manual-accounting/" target="_blank" class="bg-stone-50 rounded-[4rem] p-12 border-4 border-[#063c52] hover:bg-[#fff975] transition-all card-shadow">
                     <h3 class="text-3xl font-black text-[#063c52] mb-6 leading-tight italic underline decoration-4 underline-offset-8">Stop Manual Accounting</h3>
-                    <p class="text-stone-500 font-bold mb-10 italic italic leading-relaxed">Learn why manual entries are the imaginary enemy of your potential...</p>
+                    <p class="text-stone-500 font-bold mb-10 italic leading-relaxed">Learn why manual entries are the imaginary enemy of your potential...</p>
                     <span class="font-black uppercase text-[10px] tracking-[0.3em]">Read Blog Post &rarr;</span>
                 </a>
                 <a href="https://coinfetti4.wordpress.com/2025/12/10/why-cash-basis-lies/" target="_blank" class="bg-stone-50 rounded-[4rem] p-12 border-4 border-[#063c52] hover:bg-[#fff975] transition-all card-shadow">
                     <h3 class="text-3xl font-black text-[#063c52] mb-6 leading-tight italic underline decoration-4 underline-offset-8">Why Cash Basis Lies</h3>
-                    <p class="text-stone-500 font-bold mb-10 italic italic leading-relaxed">Understanding accrual clarity for a better business narrative...</p>
+                    <p class="text-stone-500 font-bold mb-10 italic leading-relaxed">Understanding accrual clarity for a better business narrative...</p>
                     <span class="font-black uppercase text-[10px] tracking-[0.3em]">Read Blog Post &rarr;</span>
                 </a>
-                <div class="bg-[#063c52] rounded-[4rem] p-12 text-white flex flex-col justify-center shadow-2xl relative overflow-hidden italic">
-                    <h3 class="text-3xl font-black mb-6 text-[#fff975] italic italic">Full library?</h3>
-                    <p class="mb-10 text-white/70 italic font-bold italic">Catch up on all the dramatic coin stories on our main WordPress portal.</p>
+                <div class="bg-[#063c52] rounded-[4rem] p-12 text-white flex flex-col justify-center shadow-2xl relative overflow-hidden">
+                    <h3 class="text-3xl font-black mb-6 text-[#fff975] italic">Full library?</h3>
+                    <p class="mb-10 text-white/70 italic font-bold">Catch up on all the dramatic coin stories on our main WordPress portal.</p>
                     <a href="https://coinfetti4.wordpress.com/posts-2/" target="_blank" class="bg-[#fff975] text-[#063c52] font-black uppercase py-5 rounded-2xl text-center text-[10px] tracking-widest shadow-xl">Visit Main Blog</a>
                 </div>
             </div>
@@ -410,35 +422,35 @@
     <!-- CHAT VIEW -->
     <section id="chat-view" class="view-section">
         <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-            <h1 class="text-8xl font-black text-[#063c52] uppercase italic mb-10 tracking-tighter italic italic italic">Let's Chat</h1>
-            <p class="text-2xl font-bold italic text-stone-400 mb-20 italic italic">"Your Coins Called — They Want a Little Confetti !!!"</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-14 text-left italic">
-                <div class="space-y-10 italic">
+            <h1 class="text-8xl font-black text-[#063c52] uppercase italic mb-10 tracking-tighter italic">Let's Chat</h1>
+            <p class="text-2xl font-bold italic text-stone-400 mb-20 italic">"Your Coins Called — They Want a Little Confetti !!!"</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-14 text-left">
+                <div class="space-y-10">
                     <a href="https://wa.me/250793898027" target="_blank" class="flex items-center p-12 bg-stone-50 rounded-[4rem] border-4 border-stone-100 hover:border-[#063c52] hover:bg-[#fff975] transition-all group">
                         <div class="w-20 h-20 bg-[#063c52] text-[#fff975] flex items-center justify-center rounded-2xl text-4xl mr-10 group-hover:rotate-12 transition-all shadow-xl italic">&#x1F4AC;</div>
-                        <span class="text-3xl font-black text-[#063c52] uppercase tracking-tighter italic italic">WhatsApp Session</span>
+                        <span class="text-3xl font-black text-[#063c52] uppercase tracking-tighter italic">WhatsApp Session</span>
                     </a>
                     <a href="mailto:sales@coinfetti.online" class="flex items-center p-12 bg-stone-50 rounded-[4rem] border-4 border-stone-100 hover:border-[#063c52] hover:bg-[#fff975] transition-all group">
                         <div class="w-20 h-20 bg-[#fff975] border-2 border-[#063c52] text-[#063c52] flex items-center justify-center rounded-2xl text-4xl mr-10 group-hover:rotate-12 transition-all shadow-xl italic">&#x1F4E7;</div>
-                        <span class="text-2xl font-black text-[#063c52] lowercase italic tracking-tight italic italic italic">sales@coinfetti.online</span>
+                        <span class="text-2xl font-black text-[#063c52] lowercase italic tracking-tight italic">sales@coinfetti.online</span>
                     </a>
                 </div>
-                <div class="bg-[#063c52] p-16 rounded-[5rem] text-white flex flex-col justify-center card-shadow relative overflow-hidden italic italic">
-                    <h3 class="text-4xl font-black uppercase italic mb-8 text-[#fff975] leading-tight italic">Negotiable plan?</h3>
-                    <p class="text-xl text-stone-300 font-bold mb-12 leading-relaxed italic italic italic italic">Talk to Reham directly. build a package that makes your coins dance.</p>
-                    <div class="flex items-center space-x-6 italic italic"><span class="text-4xl italic italic italic">&#x1F4F1;</span><p class="text-2xl font-black text-white tracking-widest italic italic">+250 793 898 027</p></div>
+                <div class="bg-[#063c52] p-16 rounded-[5rem] text-white flex flex-col justify-center card-shadow relative overflow-hidden">
+                    <h3 class="text-4xl font-black uppercase italic mb-8 text-[#fff975] leading-tight">Negotiable plan?</h3>
+                    <p class="text-xl text-stone-300 font-bold mb-12 leading-relaxed italic italic">Talk to Reham directly. build a package that makes your coins dance.</p>
+                    <div class="flex items-center space-x-6"><span class="text-4xl italic">&#x1F4F1;</span><p class="text-2xl font-black text-white tracking-widest italic">+250 793 898 027</p></div>
                 </div>
             </div>
         </main>
     </section>
 
     <!-- Global Footer -->
-    <footer class="bg-[#063c52] text-stone-500 py-32 text-center text-[11px] uppercase tracking-[0.5em] mt-24 border-t-8 border-[#fff975] italic">
+    <footer class="bg-[#063c52] text-stone-500 py-32 text-center text-[11px] uppercase tracking-[0.5em] mt-24 border-t-8 border-[#fff975]">
         <div class="w-24 h-24 bg-white/10 rounded-[2.5rem] flex items-center justify-center text-4xl font-black text-[#fff975] italic mb-10 mx-auto border-2 border-[#fff975]/30 shadow-2xl">c</div>
-        <p class="text-[#fff975] font-black italic text-xl tracking-tight normal-case mb-12 italic leading-relaxed italic">"Your Coins Called — They Want a Little Confetti !!!"</p>
+        <p class="text-[#fff975] font-black italic text-xl tracking-tight normal-case mb-12 italic leading-relaxed">"Your Coins Called — They Want a Little Confetti !!!"</p>
         <div class="mb-10 font-black text-white text-5xl tracking-tighter italic brand-text lowercase">coinfetti &copy; 2026</div>
         <p class="max-w-2xl mx-auto opacity-40 mb-12 px-10 text-white tracking-[0.2em] italic leading-loose">Global Financial Storytelling. Digital Bookkeeping. Excellence for International SMEs.</p>
-        <p class="text-[#fff975]/90 tracking-[0.3em] font-black text-sm italic italic italic">+250 793 898 027 | sales@coinfetti.online</p>
+        <p class="text-[#fff975]/90 tracking-[0.3em] font-black text-sm italic">+250 793 898 027 | sales@coinfetti.online</p>
     </footer>
 
     <script>
@@ -447,7 +459,11 @@
             const targetSection = document.getElementById(viewId + '-view');
             if(targetSection) targetSection.classList.add('active');
             
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('opacity-40'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active-nav'));
+            
+            // Add underline only if it's a valid ID to prevent null errors
+            const navBtn = document.getElementById('nav-' + viewId);
+            if (navBtn) navBtn.classList.add('active-nav');
             
             window.scrollTo(0,0);
         }
@@ -536,6 +552,10 @@
                     breakdownChart.data.labels = chartLabels;
                     breakdownChart.data.datasets[0].data = chartData;
                     breakdownChart.update();
+                } else {
+                    breakdownChart.data.labels = [];
+                    breakdownChart.data.datasets[0].data = [];
+                    breakdownChart.update();
                 }
             }
 
@@ -581,7 +601,7 @@
                 `).join('');
 
                 const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
+                const printContent = `
                     <!DOCTYPE html>
                     <html>
                     <head>
@@ -641,15 +661,17 @@
                         <div class="footer">
                             coinfetti © ${new Date().getFullYear()}
                         </div>
-                        <script>
-                            setTimeout(() => {
-                                window.print();
-                            }, 500);
-                        <\/script>
                     </body>
                     </html>
-                `);
+                `;
+                printWindow.document.write(printContent);
                 printWindow.document.close();
+                printWindow.focus();
+                
+                // Uses timeout to allow the browser window to render HTML and load fonts before prompting
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
             }
 
             radioInputs.forEach(input => input.addEventListener('change', calculateTotals));
