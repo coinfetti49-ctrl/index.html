@@ -1,571 +1,887 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>coinfetti | your coin translator</title>
+    <title>Coinfetti - Modern Accounting, Tax & Advisory Portfolio</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --coinfetti-yellow: #fff975;
-            --coinfetti-blue: #063c52;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coinfetti: {
+                            yellow: '#ffde59',
+                            yellowHover: '#f5d342',
+                            yellowLight: '#fffde6',
+                            blue: '#00167a',
+                            darkBlue: '#001059',
+                            lightBg: '#f8fafc',
+                            cardBorder: '#e2e8f0',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
         }
-
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
-            color: #063c52;
-            scroll-behavior: smooth;
+            background-color: #f1f5f9;
+            color: #001059;
         }
-
-        h1, h2, h3, .serif-font, .brand-text {
-            font-family: 'Playfair Display', serif;
+        [dir="rtl"] body, [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] p, [dir="rtl"] span, [dir="rtl"] a {
+            font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', sans-serif !important;
         }
-        
-        /* Layout Controllers */
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeIn 0.5s ease-out; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
-
+        [dir="rtl"] h1 {
+            line-height: 1.45 !important;
+            letter-spacing: normal !important;
+        }
+        [dir="rtl"] h2, [dir="rtl"] h3 {
+            line-height: 1.35 !important;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .nav-tab.active {
+            background-color: #00167a;
+            color: #ffde59;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(0, 22, 122, 0.15);
+        }
+        .page-content {
+            display: none;
+        }
+        .page-content.active-page {
+            display: block;
+            animation: fadeIn 0.25s ease-in-out;
+        }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Navigation Styles */
-        .nav-link { 
-            position: relative; 
-            cursor: pointer; 
-            transition: all 0.2s ease;
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.1em;
-        }
-        .nav-link:hover { opacity: 0.6; }
-        .nav-link.active-nav::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 3px;
-            bottom: -8px;
-            left: 0;
-            background-color: var(--coinfetti-blue);
-        }
-
-        /* Interactive Elements */
-        .custom-radio:checked + div, .custom-checkbox:checked + div {
-            border-color: var(--coinfetti-blue);
-            background-color: var(--coinfetti-yellow);
-            transform: scale(1.02);
-            box-shadow: 0 10px 15px -3px rgba(6, 60, 82, 0.1);
-        }
-
-        .card-shadow { box-shadow: 15px 15px 0px 0px #fff975; }
-        .btn-hover:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(6, 60, 82, 0.2); }
-        
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: var(--coinfetti-blue);
-            cursor: pointer;
-            border: 3px solid #fff975;
-        }
-
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 380px;
-            margin: auto;
-            height: 300px;
-        }
-
-        .dropdown:hover .dropdown-menu { display: block; }
     </style>
 </head>
-<body class="antialiased selection:bg-[#fff975] selection:text-[#063c52]">
+<body class="min-h-screen flex flex-col antialiased selection:bg-coinfetti-yellow selection:text-coinfetti-blue">
 
-    <!-- Multi-Level Header -->
-    <header class="bg-white sticky top-0 z-50 shadow-sm border-b">
-        <!-- Top Row -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
-            <div class="flex items-center space-x-4 cursor-pointer" onclick="switchView('home')">
-                <div class="w-12 h-12 rounded-full border-2 border-[#063c52] overflow-hidden bg-[#fff975] flex items-center justify-center">
-                    <img src="logo.jpeg" alt="c" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                    <span class="hidden font-black italic text-[#063c52] text-xl">c</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-4xl font-black text-[#063c52] italic leading-none brand-text lowercase tracking-tighter">coinfetti</span>
-                </div>
-            </div>
-            <div class="hidden sm:block">
-                <span class="text-[9px] font-black text-[#063c52] uppercase tracking-[0.4em] opacity-40 italic">your coin translator</span>
-            </div>
-        </div>
-
-        <!-- Yellow Navigation Bar -->
-        <div class="bg-[#fff975] border-y border-[#063c52]/10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
-                <nav class="flex items-center space-x-10">
-                    <button onclick="switchView('home')" class="nav-link active-nav text-[#063c52]" id="nav-home">Home Page</button>
-                    
-                    <div class="relative dropdown">
-                        <button class="nav-link text-[#063c52] flex items-center uppercase" id="nav-about">About <span class="ml-1 text-[8px]">&#x25BC;</span></button>
-                        <div class="dropdown-menu absolute hidden bg-white border-2 border-[#063c52] mt-0 py-2 w-48 rounded-xl shadow-xl z-50">
-                            <button onclick="switchView('about')" class="block w-full text-left px-5 py-3 hover:bg-[#fff975] transition-all text-[10px] font-black uppercase">Our Story</button>
-                            <button onclick="switchView('meet-mum')" class="block w-full text-left px-5 py-3 hover:bg-[#fff975] transition-all text-[10px] font-black uppercase">Meet Mom</button>
-                        </div>
+    <!-- STICKY HEADER WITH PAGE TABS -->
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="h-20 flex items-center justify-between gap-4">
+                
+                <!-- Brand Logo (Official Coinfetti Smiling Coin Image) -->
+                <a href="#" onclick="switchTab('hero'); return false;" class="flex items-center gap-3 group shrink-0">
+                    <img src="gemini_generated_image_b1cpaab1cpaab1cp-removebg-preview-edited.webp" alt="Coinfetti Logo" class="w-11 h-11 object-contain drop-shadow-sm group-hover:scale-105 transition-transform" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ffde59/00167a?text=Coinfetti';">
+                    <div>
+                        <span class="font-heading font-extrabold text-coinfetti-blue text-xl tracking-tight block leading-none" data-i18n="brandName">COINFETTI</span>
+                        <span class="text-[10px] font-bold tracking-widest text-coinfetti-darkBlue uppercase block mt-1" data-i18n="brandSub">Accounting & Advisory</span>
                     </div>
+                </a>
 
-                    <button onclick="switchView('posts')" class="nav-link text-[#063c52]" id="nav-posts">Posts</button>
-                    
-                    <div class="relative dropdown">
-                        <button class="nav-link text-[#063c52] flex items-center uppercase" id="nav-pricing">Services <span class="ml-1 text-[8px]">&#x25BC;</span></button>
-                        <div class="dropdown-menu absolute hidden bg-white border-2 border-[#063c52] mt-0 py-2 w-48 rounded-xl shadow-xl z-50">
-                            <button onclick="switchView('pricing')" class="block w-full text-left px-5 py-3 hover:bg-[#fff975] transition-all text-[10px] font-black uppercase">Pricing Explorer</button>
-                        </div>
-                    </div>
-
-                    <button onclick="window.open('https://coinfetti4.wordpress.com/miss-me-already/', '_blank')" class="nav-link text-[#063c52]">Newsletter</button>
-                    <button onclick="switchView('chat')" class="nav-link text-[#063c52]" id="nav-chat">Contact Us</button>
+                <!-- Desktop Page Navigation Tabs -->
+                <nav class="hidden lg:flex items-center gap-1.5 text-xs font-semibold overflow-x-auto py-2">
+                    <button id="tab-btn-hero" onclick="switchTab('hero')" class="nav-tab active px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-all" data-i18n="navOverview">Overview</button>
+                    <button id="tab-btn-services" onclick="switchTab('services')" class="nav-tab px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-all" data-i18n="navServices">Services</button>
+                    <button id="tab-btn-cases" onclick="switchTab('cases')" class="nav-tab px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-all" data-i18n="navCases">Case Studies</button>
+                    <button id="tab-btn-roadmap" onclick="switchTab('roadmap')" class="nav-tab px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-all" data-i18n="navProcess">Process</button>
                 </nav>
 
-                <button onclick="window.open('https://coinfetti4.wordpress.com/miss-me-already/', '_blank')" class="bg-black text-white px-8 h-14 flex items-center font-black text-xs uppercase tracking-widest hover:bg-[#063c52] transition-all">Subscribe</button>
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2.5 shrink-0">
+                    <!-- Language Selector Button -->
+                    <button id="lang-toggle-btn" onclick="toggleLanguage()" class="bg-slate-100 hover:bg-slate-200 border border-gray-300 text-coinfetti-blue px-3 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-globe text-coinfetti-blue"></i>
+                        <span id="lang-toggle-text">العربية</span>
+                    </button>
+                    <a href="https://linkedin.com/company/coinfettiltd" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-2 bg-coinfetti-blue text-white px-3.5 py-2.5 rounded-xl font-semibold text-xs hover:bg-coinfetti-darkBlue transition-all shadow-sm">
+                        <i class="fa-brands fa-linkedin text-coinfetti-yellow text-sm"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://calendly.com/coinfetti49/30min" target="_blank" rel="noopener noreferrer" class="bg-coinfetti-yellow text-coinfetti-blue px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-coinfetti-yellowHover transition-all shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-sm"></i>
+                        <span data-i18n="bookConsult">Book Consultation</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile Tab Bar (Horizontal Scroll) -->
+            <div class="flex lg:hidden overflow-x-auto gap-2 py-2 border-t border-gray-100 text-xs no-scrollbar">
+                <button id="mtab-btn-hero" onclick="switchTab('hero')" class="nav-tab active whitespace-nowrap px-3.5 py-1.5 rounded-lg text-gray-600" data-i18n="navOverview">Overview</button>
+                <button id="mtab-btn-services" onclick="switchTab('services')" class="nav-tab whitespace-nowrap px-3.5 py-1.5 rounded-lg text-gray-600" data-i18n="navServices">Services</button>
+                <button id="mtab-btn-cases" onclick="switchTab('cases')" class="nav-tab whitespace-nowrap px-3.5 py-1.5 rounded-lg text-gray-600" data-i18n="navCases">Case Studies</button>
+                <button id="mtab-btn-roadmap" onclick="switchTab('roadmap')" class="nav-tab whitespace-nowrap px-3.5 py-1.5 rounded-lg text-gray-600" data-i18n="navProcess">Process</button>
+                <button id="mtab-btn-contact" onclick="switchTab('contact')" class="nav-tab whitespace-nowrap px-3.5 py-1.5 rounded-lg text-gray-600" data-i18n="bookConsult">Book Consult</button>
             </div>
         </div>
     </header>
 
-    <main>
-        
-        <!-- HERO / HOME VIEW -->
-        <section id="home-view" class="view-section active">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-                <h2 class="text-[#063c52] font-black italic text-lg mb-12 tracking-tight">"Your Coins Called — They Want a Little Confetti !!!"</h2>
-                <h1 class="text-3xl md:text-5xl font-black text-[#063c52] mb-16 leading-[2.6] uppercase italic tracking-tighter max-w-4xl mx-auto">
-                    A financial story <br>
-                    <span class="bg-[#fff975] px-6 py-2 shadow-[-10px_10px_0px_0px_#063c52]">well told</span><br>
-                    is a business well managed.
-                </h1>
-                <p class="text-xl font-medium text-stone-500 mb-16 max-w-2xl mx-auto italic leading-relaxed">High-end digital bookkeeping & financial storytelling for international SMEs. Because clarity doesn't have to be boring.</p>
-                <div class="flex flex-wrap justify-center gap-6">
-                    <button onclick="switchView('pricing')" class="bg-[#063c52] text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl btn-hover transition-all">Explore Pricing</button>
-                    <button onclick="switchView('about')" class="border-2 border-[#063c52] px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-[#fff975] transition-all">Read Our Story</button>
-                </div>
-            </div>
-        </section>
+    <!-- MAIN CONTAINER WITH DEDICATED PAGE VIEWS -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <!-- OUR STORY VIEW -->
-        <section id="about-view" class="view-section">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-                    <div class="bg-[#fff975] p-2 rounded-[4rem] border-4 border-[#063c52] card-shadow">
-                        <div class="bg-white rounded-[3.5rem] p-12">
-                            <h1 class="text-6xl font-black text-[#063c52] uppercase italic mb-8">Our Story</h1>
-                            <p class="text-xl text-stone-600 leading-relaxed mb-8 serif-font italic font-bold">Accounting? Boring. Complicated. Stressful. (At least… that’s what everyone thinks).</p>
-                            <p class="text-base text-stone-500 mb-6 leading-loose italic italic">But what if numbers weren’t silent rows in a spreadsheet? What if they could laugh, argue, throw parties, and tell you their secrets? That’s exactly why Coinfetti was born — not as a company at first, but as an imaginary friend for your coins.</p>
-                            <p class="text-base text-stone-500 leading-loose mb-10 italic italic">In my head, coins were never just metal or digits. They were alive. They cheered when you saved them, sulked when you ignored them. They had stories worth telling.</p>
-                            <a href="https://coinfetti4.wordpress.com/2025/09/13/hello-world/" target="_blank" class="bg-[#063c52] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] btn-hover inline-block shadow-lg">Read Full Story on Blog</a>
+        <!-- PAGE 1: OVERVIEW & VALUE PROPOSITION -->
+        <section id="page-hero" class="page-content active-page">
+            <div class="bg-gradient-to-br from-coinfetti-yellow via-coinfetti-yellowLight to-yellow-100 border-2 border-coinfetti-yellow rounded-3xl p-8 lg:p-14 shadow-sm">
+                <div class="max-w-3xl">
+                    <div class="inline-flex items-center gap-2 bg-coinfetti-blue text-coinfetti-yellow px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider mb-6 shadow-sm">
+                        <i class="fa-solid fa-location-dot"></i> <span data-i18n="heroTag">Kigali, Rwanda • International</span>
+                    </div>
+                    
+                    <h1 class="font-heading text-3xl sm:text-5xl lg:text-5xl font-black text-coinfetti-blue tracking-tight leading-[1.2] mb-6" data-i18n="heroTitle">
+                        Compliance & Financial Health.<br>
+                        <span class="bg-coinfetti-blue text-coinfetti-yellow px-4 py-1 rounded-2xl inline-block my-1">
+                            Two Sides of the Same Coin.
+                        </span><br>
+                        Built to Endure.
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-coinfetti-darkBlue font-medium leading-relaxed mb-8 max-w-2xl" data-i18n="heroSub">
+                        Are you paying taxes, or paying penalties? High revenue alone doesn’t mean your business is healthy. We give you full regulatory protection and true profitability tracking—so your enterprise remains a thriving going concern.
+                    </p>
+
+                    <!-- TWO SIDES OF THE SAME COIN HIGHLIGHT CARD -->
+                    <div class="grid sm:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-white/90 backdrop-blur border border-yellow-300 p-5 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-coinfetti-blue text-coinfetti-yellow flex items-center justify-center font-bold text-sm">1</div>
+                                <h3 class="font-heading font-extrabold text-coinfetti-blue text-sm" data-i18n="sideATitle">Side A: Compliance & Safety</h3>
+                            </div>
+                            <p class="text-xs text-gray-700 leading-relaxed" data-i18n="sideADesc">
+                                Are you paying taxes or hidden penalties? Prevent compliance bottlenecks before they put your business at risk.
+                            </p>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur border border-yellow-300 p-5 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-8 h-8 rounded-lg bg-coinfetti-blue text-coinfetti-yellow flex items-center justify-center font-bold text-sm">2</div>
+                                <h3 class="font-heading font-extrabold text-coinfetti-blue text-sm" data-i18n="sideBTitle">Side B: True Financial Health</h3>
+                            </div>
+                            <p class="text-xs text-gray-700 leading-relaxed" data-i18n="sideBDesc">
+                                Know what it actually costs to generate your revenue, protect your margins, and understand your real profit.
+                            </p>
                         </div>
                     </div>
-                    <div class="space-y-12">
-                        <h2 class="text-4xl font-black text-[#063c52] uppercase italic">Three things at once:</h2>
-                        <div class="space-y-10 italic">
-                            <div class="border-l-4 border-[#fff975] pl-8">
-                                <h4 class="font-black uppercase text-[10px] mb-2 tracking-widest">A Newsletter</h4>
-                                <p class="text-xl font-bold">Your weekly chat with money, minus the boring jargon.</p>
-                            </div>
-                            <div class="border-l-4 border-[#fff975] pl-8">
-                                <h4 class="font-black uppercase text-[10px] mb-2 tracking-widest">A Website</h4>
-                                <p class="text-xl font-bold">A safe home for catch-up storytelling.</p>
-                            </div>
-                            <div class="border-l-4 border-[#fff975] pl-8">
-                                <h4 class="font-black uppercase text-[10px] mb-2 tracking-widest">A Service Provider</h4>
-                                <p class="text-xl font-bold">Translating money language into human reality.</p>
-                            </div>
-                        </div>
+
+                    <div class="flex flex-wrap items-center gap-3 mb-8">
+                        <span class="bg-white/90 backdrop-blur border border-yellow-300 text-coinfetti-blue px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-certificate text-coinfetti-blue"></i> <span data-i18n="badgeQBO">QuickBooks Advanced ProAdvisor</span>
+                        </span>
+                        <span class="bg-white/90 backdrop-blur border border-yellow-300 text-coinfetti-blue px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-award text-coinfetti-blue"></i> <span data-i18n="badgeNetSuite">Oracle NetSuite Certified</span>
+                        </span>
+                        <span class="bg-white/90 backdrop-blur border border-yellow-300 text-coinfetti-blue px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-shield-halved text-coinfetti-blue"></i> <span data-i18n="badgeRRA">RRA & E-Tax Specialists</span>
+                        </span>
                     </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- MEET MOM VIEW -->
-        <section id="meet-mum-view" class="view-section">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <div class="max-w-4xl mx-auto bg-stone-50 border-4 border-[#063c52] rounded-[5rem] shadow-2xl overflow-hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-5">
-                        <div class="md:col-span-2 bg-[#063c52] p-12 flex flex-col justify-center items-center text-center text-white">
-                            <div class="w-48 h-48 rounded-3xl border-4 border-[#fff975] mb-8 overflow-hidden bg-white rotate-3 flex items-center justify-center">
-                                <img src="logo.jpeg" alt="Reham" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                                <span class="hidden font-black italic text-[#063c52] text-6xl">c</span>
-                            </div>
-                            <h2 class="text-3xl font-black uppercase italic mb-2">Reham</h2>
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-50">Founder & Mom</p>
-                        </div>
-                        <div class="md:col-span-3 p-12 md:p-20 bg-white">
-                            <h1 class="text-5xl font-black text-[#063c52] uppercase italic mb-8">MEET MOM</h1>
-                            <p class="text-2xl font-bold italic text-stone-400 mb-8 leading-relaxed italic italic">"Coins speak, and numbers are their words."</p>
-                            <div class="space-y-6 text-stone-600 leading-relaxed italic text-lg italic">
-                                <p>Now, let me introduce you to my creator—Reham (you can call her my mom). She’s a passionate young graduate with 3 years of marketing experience and a strong background in accounting.</p>
-                                <p>Reham graduated top of her class because of her love for numbers. She created me to help the world see accounting differently—not as something boring, but as a living language.</p>
-                                <p>She believes if you listen carefully, you’ll realize accounting isn’t just about doing math—it’s about understanding what the numbers are trying to say.</p>
-                            </div>
-                            <div class="mt-12">
-                                <button onclick="switchView('chat')" class="bg-[#063c52] text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] btn-hover shadow-xl">Start Chatting with Reham</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PRICING EXPLORER VIEW -->
-        <section id="pricing-view" class="view-section">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div class="text-center mb-16">
-                    <h1 class="text-6xl font-black text-[#063c52] uppercase italic tracking-tighter">The Coin Builder</h1>
-                    <p class="text-lg font-bold italic text-stone-400 mt-4">Baseline estimates for our global partners.</p>
-                </div>
-
-                <div class="bg-white rounded-[4rem] shadow-2xl border-4 border-[#063c52] overflow-hidden mb-28">
-                    <div class="grid grid-cols-1 lg:grid-cols-12">
-                        <!-- Controls -->
-                        <div class="lg:col-span-7 p-10 md:p-16 bg-stone-50/40">
-                            <div class="flex items-center space-x-6 mb-14">
-                                <div class="w-4 h-14 bg-[#063c52] rounded-full shadow-lg"></div>
-                                <h2 class="text-4xl font-black text-[#063c52] uppercase italic tracking-tight italic">Estimator</h2>
-                            </div>
-                            <div class="space-y-16">
-                                <div>
-                                    <h3 class="text-[11px] font-black tracking-[0.3em] text-stone-400 uppercase mb-8 flex items-center">
-                                        <span class="mr-4 bg-[#063c52] text-[#fff975] w-8 h-8 flex items-center justify-center rounded-xl font-black text-xs shadow-md italic">01</span> Reporting
-                                    </h3>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <label class="relative cursor-pointer group">
-                                            <input type="radio" name="financial" value="500" class="custom-radio peer sr-only" data-label="Full Global FS">
-                                            <div class="p-8 rounded-[2rem] border-2 border-stone-200 transition-all bg-white hover:border-[#063c52] peer-checked:border-[#063c52]">
-                                                <div class="font-black text-[#063c52] uppercase text-[10px] mb-3 opacity-60">Full Package</div>
-                                                <div class="text-[#063c52] font-black text-5xl italic">$500</div>
-                                            </div>
-                                        </label>
-                                        <label class="relative cursor-pointer group">
-                                            <input type="radio" name="financial" value="200" class="custom-radio peer sr-only" data-label="Core FS">
-                                            <div class="p-8 rounded-[2rem] border-2 border-stone-200 transition-all bg-white hover:border-[#063c52] peer-checked:border-[#063c52]">
-                                                <div class="font-black text-[#063c52] uppercase text-[10px] mb-3 opacity-60">Statements Only</div>
-                                                <div class="text-[#063c52] font-black text-5xl italic">$200</div>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 class="text-[11px] font-black tracking-[0.3em] text-stone-400 uppercase mb-8 flex items-center">
-                                        <span class="mr-4 bg-[#063c52] text-[#fff975] w-8 h-8 flex items-center justify-center rounded-xl font-black text-xs shadow-md italic">02</span> Maintenance
-                                    </h3>
-                                    <label class="relative flex items-start cursor-pointer group">
-                                        <input type="checkbox" name="monthly_bookkeeping" value="150" class="custom-checkbox peer sr-only" data-label="Maintenance">
-                                        <div class="w-full p-8 rounded-[2rem] border-2 border-stone-200 transition-all bg-white hover:border-[#063c52] peer-checked:border-[#063c52] flex justify-between items-center">
-                                            <div class="font-black text-[#063c52] uppercase text-[11px] tracking-widest italic">Fixed maintenance ($150/mo)</div>
-                                            <div class="text-[#063c52] font-black text-2xl italic">Select</div>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="bg-white p-12 rounded-[3.5rem] border-2 border-[#063c52] shadow-xl relative overflow-hidden">
-                                    <h3 class="text-[11px] font-black tracking-[0.3em] text-stone-400 uppercase mb-10 flex items-center">
-                                        <span class="mr-4 bg-[#fff975] text-[#063c52] w-9 h-9 flex items-center justify-center rounded-xl border-2 border-[#063c52] font-black text-sm italic">H</span> Hourly Projection
-                                    </h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 italic">
-                                        <div>
-                                            <label class="block text-[11px] font-black uppercase text-[#063c52] mb-4 tracking-widest">Service</label>
-                                            <select id="hourly-service" class="w-full bg-stone-50 border-2 border-stone-200 rounded-2xl p-5 text-sm font-black text-[#063c52] outline-none appearance-none cursor-pointer">
-                                                <option value="15">Expert Bookkeeping ($15/hr)</option>
-                                                <option value="25">Financial Reporting ($25/hr)</option>
-                                                <option value="20">Cleanup & Cleaning ($20/hr)</option>
-                                                <option value="25">Bank Reconciliation ($25/hr)</option>
-                                                <option value="25">System Integration ($25/hr)</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-[11px] font-black uppercase text-[#063c52] mb-4 tracking-widest italic">Hours: <span id="hours-val" class="text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full ml-2">0 hrs</span></label>
-                                            <input type="range" id="hourly-range" min="0" max="100" value="0" class="w-full h-3 bg-stone-200 rounded-lg appearance-none cursor-pointer mt-4">
-                                        </div>
-                                    </div>
-                                    <div class="mt-10 pt-10 border-t border-stone-100 flex justify-between items-center italic">
-                                        <span class="text-xs font-black text-stone-400 uppercase tracking-widest italic">Subtotal:</span>
-                                        <span class="text-4xl font-black text-[#063c52] tracking-tighter italic" id="hourly-subtotal">$0</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Result -->
-                        <div class="lg:col-span-5 p-10 md:p-16 bg-white flex flex-col justify-center items-center relative border-t-2 lg:border-t-0 lg:border-l-2 border-stone-100 text-center">
-                            <div class="mb-12 z-10 italic">
-                                <h3 class="text-[11px] font-black text-stone-400 uppercase tracking-[0.5em] mb-6 italic">Estimate Total</h3>
-                                <div class="text-9xl font-black text-[#063c52] tracking-tighter mb-8 leading-none drop-shadow-sm italic" id="total-cost">$0</div>
-                                <div class="inline-flex items-center space-x-4 bg-[#fff975] border-2 border-[#063c52] text-[#063c52] px-10 py-4 rounded-full text-sm font-black uppercase shadow-lg mb-8 italic">
-                                    <span>Negotiable Plan</span>
-                                    <span class="bg-[#063c52] text-white w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-black">&#x2714;</span>
-                                </div>
-                                <button id="download-btn" onclick="downloadQuote()" class="mx-auto hidden items-center justify-center bg-white border-2 border-[#063c52] text-[#063c52] px-8 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-[#063c52] hover:text-[#fff975] transition-all shadow-md italic">
-                                    <span class="text-base mr-2">📥</span> Download PDF Quote
-                                </button>
-                            </div>
-                            <div class="chart-container z-10 italic">
-                                <canvas id="costBreakdownChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabs -->
-                <div class="flex items-center space-x-10 mb-16 italic">
-                    <h2 class="text-5xl font-black text-[#063c52] uppercase italic leading-none">The Full Menu</h2>
-                    <div class="flex-grow h-3 bg-stone-100 rounded-full"></div>
-                </div>
-
-                <div class="flex flex-wrap gap-4 mb-14 bg-stone-50 p-3 rounded-[2.5rem] italic" id="tabs-nav">
-                    <button class="flex-1 px-10 py-7 text-xs font-black uppercase tracking-[0.2em] transition-all rounded-[2rem] bg-[#063c52] text-white shadow-2xl" onclick="switchTab('tab-bookkeeping', this)">01 Bookkeeping</button>
-                    <button class="flex-1 px-10 py-7 text-xs font-black uppercase tracking-[0.2em] transition-all rounded-[2rem] text-stone-400 hover:text-[#063c52]" onclick="switchTab('tab-tax', this)">02 Rwanda Tax</button>
-                    <button class="flex-1 px-10 py-7 text-xs font-black uppercase tracking-[0.2em] transition-all rounded-[2rem] text-stone-400 hover:text-[#063c52]" onclick="switchTab('tab-advisory', this)">03 Global Advisory</button>
-                </div>
-
-                <div class="bg-white p-6 sm:p-16 border-4 border-[#063c52] rounded-[5rem] shadow-2xl italic">
-                    <div id="tab-bookkeeping" class="tab-content active">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 italic">
-                            <div class="p-12 bg-[#fff975] border-2 border-[#063c52] rounded-[4rem]">
-                                <span class="font-black text-[#063c52] uppercase text-[11px] block mb-4 italic tracking-widest italic">Fixed Monthly</span>
-                                <div class="text-5xl font-black text-[#063c52] mb-6 tracking-tighter italic italic">$150/mo</div>
-                                <p class="text-lg font-bold italic mb-6">Standard maintenance for up to 50 transactions.</p>
-                            </div>
-                            <div class="p-12 bg-stone-50 rounded-[4rem] border-2 border-stone-100 space-y-6">
-                                <div class="flex justify-between border-b pb-4"><span class="font-bold">Bookkeeping</span><span class="font-black">$15/hr</span></div>
-                                <div class="flex justify-between border-b pb-4"><span class="font-bold">Cleaning</span><span class="font-black">$20/hr</span></div>
-                                <div class="flex justify-between border-b pb-4"><span class="font-bold">Reconciliation</span><span class="font-black">$25/hr</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="tab-tax" class="tab-content">
-                        <div class="bg-white border-4 border-stone-50 rounded-[4rem] overflow-hidden shadow-sm italic italic">
-                            <table class="w-full text-left italic">
-                                <thead class="bg-[#063c52] text-white text-[11px] uppercase tracking-[0.5em] italic">
-                                    <tr><th class="p-12">Local Tax Category</th><th class="p-12">Fee (USD)</th><th class="p-12">Compliance Detail</th></tr>
-                                </thead>
-                                <tbody class="text-lg font-bold text-[#063c52] italic italic">
-                                    <tr class="border-b bg-stone-50/30 italic"><td class="p-12 uppercase italic">VAT / WHT / Tourism</td><td class="p-12 font-black text-4xl italic">$30 - $50</td><td class="p-12 opacity-60">Per Filing Period</td></tr>
-                                    <tr class="border-b italic"><td class="p-12 uppercase italic">CIT: Real Regime</td><td class="p-12 font-black text-4xl italic">$100</td><td class="p-12 opacity-60 italic">Annual Filing</td></tr>
-                                    <tr class="bg-stone-50/30 italic"><td class="p-12 uppercase italic">CIT: Lump Sum / IQP</td><td class="p-12 font-black text-4xl italic">$30</td><td class="p-12 opacity-60 italic">Quarterly Compliance</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="tab-advisory" class="tab-content">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 italic italic">
-                            <div class="bg-[#063c52] text-white p-16 rounded-[5rem] relative group shadow-2xl overflow-hidden italic italic">
-                                <h4 class="text-[#fff975] font-black uppercase text-[11px] mb-8 italic italic">SaaS Integration</h4>
-                                <div class="text-5xl font-black mb-14 italic leading-none tracking-tight">System Global Setup</div>
-                                <div class="flex items-baseline space-x-5"><span class="text-8xl font-black text-[#fff975] tracking-tighter italic">$25</span><span class="text-stone-500 font-black uppercase text-xs italic">/ hour</span></div>
-                            </div>
-                            <div class="bg-[#fff975] p-16 border-4 border-[#063c52] rounded-[5rem] flex flex-col justify-between italic">
-                                <h4 class="text-[#063c52] font-black uppercase text-[11px] mb-8 italic tracking-[0.2em] italic">One-Time Transition</h4>
-                                <div class="text-8xl font-black mb-6 text-[#063c52] tracking-tighter italic">$200 <span class="text-[11px] uppercase block font-black mt-4 tracking-[0.3em] italic">Fixed Setup Fee</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- POSTS VIEW -->
-        <section id="posts-view" class="view-section">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center italic">
-                <h1 class="text-7xl font-black text-[#063c52] uppercase italic tracking-tighter mb-6 italic">Financial Stories</h1>
-                <p class="text-2xl font-bold italic text-stone-400 italic mb-24">Education, Strategy, and Digital Transformation.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 text-left italic italic">
-                    <a href="https://coinfetti4.wordpress.com/2026/01/14/stop-the-manual-accounting/" target="_blank" class="bg-stone-50 rounded-[4rem] p-12 border-4 border-[#063c52] hover:bg-[#fff975] transition-all card-shadow">
-                        <h3 class="text-3xl font-black text-[#063c52] mb-6 leading-tight italic underline decoration-4 underline-offset-8">Stop Manual Accounting</h3>
-                        <p class="text-stone-500 font-bold mb-10 italic italic">Learn why manual entries are the imaginary enemy of your global potential...</p>
-                        <span class="font-black uppercase text-[10px] tracking-[0.3em] italic">Read Blog Post &rarr;</span>
-                    </a>
-                    <a href="https://coinfetti4.wordpress.com/2025/12/10/why-cash-basis-lies/" target="_blank" class="bg-stone-50 rounded-[4rem] p-12 border-4 border-[#063c52] hover:bg-[#fff975] transition-all card-shadow">
-                        <h3 class="text-3xl font-black text-[#063c52] mb-6 leading-tight italic underline decoration-4 underline-offset-8">Why Cash Basis Lies</h3>
-                        <p class="text-stone-500 font-bold mb-10 italic italic">Understanding accrual clarity for a better business narrative...</p>
-                        <span class="font-black uppercase text-[10px] tracking-[0.3em] italic">Read Blog Post &rarr;</span>
-                    </a>
-                    <div class="bg-[#063c52] rounded-[4rem] p-12 text-white flex flex-col justify-center relative overflow-hidden italic">
-                        <h3 class="text-3xl font-black mb-6 text-[#fff975] italic">Full library?</h3>
-                        <p class="mb-10 text-white/70 italic font-bold">Catch up on all the stories on our main WordPress portal.</p>
-                        <a href="https://coinfetti4.wordpress.com/posts-2/" target="_blank" class="bg-[#fff975] text-[#063c52] font-black uppercase py-5 rounded-2xl text-center text-[10px] tracking-widest shadow-xl">Visit Main Blog</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CHAT VIEW -->
-        <section id="chat-view" class="view-section">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center italic">
-                <h1 class="text-8xl font-black text-[#063c52] uppercase italic mb-10 tracking-tighter italic italic">Let's Chat</h1>
-                <p class="text-2xl font-bold italic text-stone-400 mb-20">"Your Coins Called — They Want a Little Confetti !!!"</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-14 text-left italic italic">
-                    <div class="space-y-10 italic">
-                        <a href="https://wa.me/250793898027" target="_blank" class="flex items-center p-12 bg-stone-50 rounded-[4rem] border-4 border-stone-100 hover:border-[#063c52] hover:bg-[#fff975] transition-all group shadow-sm">
-                            <div class="w-20 h-20 bg-[#063c52] text-[#fff975] flex items-center justify-center rounded-2xl text-4xl mr-10 group-hover:rotate-12 transition-all shadow-xl italic">&#x1F4AC;</div>
-                            <span class="text-3xl font-black text-[#063c52] uppercase tracking-tighter italic">WhatsApp Session</span>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <a href="https://calendly.com/coinfetti49/30min" target="_blank" rel="noopener noreferrer" class="bg-coinfetti-blue text-coinfetti-yellow hover:bg-coinfetti-darkBlue px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span data-i18n="btnConsult">Schedule Consultation Call</span>
                         </a>
-                        <a href="mailto:sales@coinfetti.online" class="flex items-center p-12 bg-stone-50 rounded-[4rem] border-4 border-stone-100 hover:border-[#063c52] hover:bg-[#fff975] transition-all group shadow-sm">
-                            <div class="w-20 h-20 bg-[#fff975] border-2 border-[#063c52] text-[#063c52] flex items-center justify-center rounded-2xl text-4xl mr-10 group-hover:rotate-12 transition-all shadow-xl italic">&#x1F4E7;</div>
-                            <span class="text-2xl font-black text-[#063c52] lowercase italic tracking-tight italic">sales@coinfetti.online</span>
-                        </a>
+                        <button onclick="switchTab('services')" class="bg-white text-coinfetti-blue hover:bg-gray-50 border border-yellow-300 px-6 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center gap-2">
+                            <span data-i18n="btnExplore">Explore Solutions</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
                     </div>
-                    <div class="bg-[#063c52] p-16 rounded-[5rem] text-white flex flex-col justify-center card-shadow relative overflow-hidden italic italic">
-                        <h3 class="text-4xl font-black uppercase italic mb-8 text-[#fff975] leading-tight italic">Negotiable plan?</h3>
-                        <p class="text-xl text-stone-300 font-bold mb-12 leading-relaxed italic italic">Talk to Reham directly. Build a package that makes your coins dance.</p>
-                        <div class="flex items-center space-x-6"><span class="text-4xl italic">&#x1F4F1;</span><p class="text-2xl font-black text-white tracking-widest italic">+250 793 898 027</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: SERVICE PILLARS & TECH ARCHITECTURE -->
+        <section id="page-services" class="page-content">
+            <div class="bg-white border border-gray-200 rounded-3xl p-8 lg:p-12 shadow-sm">
+                <div class="max-w-3xl mb-10">
+                    <span class="bg-coinfetti-yellow text-coinfetti-blue px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider" data-i18n="servicesTag">
+                        Executive Practice Areas
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-coinfetti-blue mt-3" data-i18n="servicesTitle">
+                        Comprehensive Financial & Compliance Solutions
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-2" data-i18n="servicesSub">
+                        End-to-end accounting governance, tax safety, and cloud system architecture built to protect and scale your enterprise.
+                    </p>
+                </div>
+
+                <!-- 4 COMPREHENSIVE HIGH-LEVEL SERVICE PILLARS -->
+                <div class="grid md:grid-cols-2 gap-8 mb-12">
+                    <!-- Pillar 1 -->
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-gray-200 hover:border-coinfetti-yellow transition-all shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-xl font-bold shrink-0">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading text-lg font-extrabold text-coinfetti-blue" data-i18n="p1Title">Tax & Regulatory Compliance</h3>
+                                <p class="text-xs text-gray-500" data-i18n="p1Sub">RRA, E-Tax & MyRRA Governance</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-4 leading-relaxed" data-i18n="p1Desc">
+                            Full-scope corporate tax management and regulatory protection. We manage CIT, IQP, VAT, PAYE, WHT, district property taxes, and EBM v2 reconciliations to ensure complete compliance and eliminate penalty exposure.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-[11px] font-bold text-coinfetti-blue">
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p1Tag1">Income & Corporate Taxes</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p1Tag2">Indirect & Payroll Filings</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p1Tag3">District & Property Taxes</span>
+                        </div>
                     </div>
+
+                    <!-- Pillar 2 -->
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-gray-200 hover:border-coinfetti-yellow transition-all shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-xl font-bold shrink-0">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading text-lg font-extrabold text-coinfetti-blue" data-i18n="p2Title">Bookkeeping & Financial Close</h3>
+                                <p class="text-xs text-gray-500" data-i18n="p2Sub">QuickBooks Standard & Financial Governance</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-4 leading-relaxed" data-i18n="p2Desc">
+                            Complete day-to-day bookkeeping, multi-currency accounting, bank/sales reconciliations, and structured month-end closes. QuickBooks is provided as our standard bookkeeping platform, with seamless tier upgrades or custom ERP management available.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-[11px] font-bold text-coinfetti-blue">
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p2Tag1">QuickBooks Standard</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p2Tag2">Bank & EBM Reconciliations</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p2Tag3">Month-End Statements</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 3 -->
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-gray-200 hover:border-coinfetti-yellow transition-all shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-xl font-bold shrink-0">
+                                <i class="fa-solid fa-network-wired"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading text-lg font-extrabold text-coinfetti-blue" data-i18n="p3Title">ERP System Architecture</h3>
+                                <p class="text-xs text-gray-500" data-i18n="p3Sub">System Integration & Workflow Setup</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-4 leading-relaxed" data-i18n="p3Desc">
+                            One-time specialized setup for expanding organizations. We structure custom Chart of Accounts, opening balance migrations, bank rules, and multi-currency workflows across QuickBooks, Xero, Tally, and NetSuite ERP.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-[11px] font-bold text-coinfetti-blue">
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p3Tag1">Chart of Accounts Mapping</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p3Tag2">Cloud ERP Setup</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p3Tag3">Workflow Automation</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 4 -->
+                    <div class="bg-slate-50 p-8 rounded-2xl border border-gray-200 hover:border-coinfetti-yellow transition-all shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-xl font-bold shrink-0">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-heading text-lg font-extrabold text-coinfetti-blue" data-i18n="p4Title">Entity Onboarding & Advisory</h3>
+                                <p class="text-xs text-gray-500" data-i18n="p4Sub">Corporate Advisory, Filings & Clearances</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-4 leading-relaxed" data-i18n="p4Desc">
+                            Structured setup for local firms and foreign investors. Includes business entity registration support, E-Tax and MyRRA account creation, EBM v2 registration, annual return filings, and obtaining official Tax Clearance Certificates.
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-[11px] font-bold text-coinfetti-blue">
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p4Tag1">E-Tax & MyRRA Onboarding</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p4Tag2">Tax Clearance Certificates</span>
+                            <span class="bg-white px-2.5 py-1 rounded-lg border border-gray-200" data-i18n="p4Tag3">Annual Return Filings</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SOFTWARE & TECH STACK SECTION -->
+                <div class="pt-8 border-t border-gray-200">
+                    <h3 class="font-heading text-xl font-extrabold text-coinfetti-blue mb-6" data-i18n="techTitle">Cloud & ERP Platforms Supported</h3>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 1. QBO -->
+                        <div class="bg-coinfetti-yellowLight border-2 border-coinfetti-yellow p-5 rounded-2xl">
+                            <span class="bg-coinfetti-blue text-coinfetti-yellow text-[10px] font-black px-2.5 py-1 rounded-full uppercase inline-block mb-2" data-i18n="qboBadge">Our Primary Standard</span>
+                            <h4 class="font-heading font-extrabold text-coinfetti-blue text-base" data-i18n="qboTitle">QuickBooks Online</h4>
+                            <p class="text-xs text-gray-600 mt-2" data-i18n="qboDesc">Provided as our standard bookkeeping platform. Upgrades to higher QBO tiers available anytime as your team grows.</p>
+                        </div>
+
+                        <!-- 2. Xero & Tally -->
+                        <div class="bg-slate-50 border border-gray-200 p-5 rounded-2xl">
+                            <span class="bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase inline-block mb-2" data-i18n="xeroBadge">Fully Managed</span>
+                            <h4 class="font-heading font-extrabold text-coinfetti-blue text-base" data-i18n="xeroTitle">Xero & Tally</h4>
+                            <p class="text-xs text-gray-600 mt-2" data-i18n="xeroDesc">We manage, set up, and can handle/provide official software subscriptions directly for your team.</p>
+                        </div>
+
+                        <!-- 3. Custom / Other -->
+                        <div class="bg-slate-50 border border-gray-200 p-5 rounded-2xl">
+                            <span class="bg-gray-100 text-gray-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase inline-block mb-2" data-i18n="customBadge">Other Systems</span>
+                            <h4 class="font-heading font-extrabold text-coinfetti-blue text-base" data-i18n="customTitle">Custom / Other Systems</h4>
+                            <p class="text-xs text-gray-600 mt-2" data-i18n="customDesc">We review system feasibility honestly. If supported, we manage reconciliations and setup.</p>
+                        </div>
+
+                        <!-- 4. Oracle NetSuite -->
+                        <div class="bg-slate-50 border border-gray-200 p-5 rounded-2xl">
+                            <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase inline-block mb-2" data-i18n="netsuiteBadge">Enterprise ERP</span>
+                            <h4 class="font-heading font-extrabold text-coinfetti-blue text-base" data-i18n="netsuiteTitle">Oracle NetSuite</h4>
+                            <p class="text-xs text-gray-600 mt-2" data-i18n="netsuiteDesc">Full enterprise ERP setup via trusted partners with localized pricing for larger African organizations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: CASE STUDIES & TRANSFORMATIONS -->
+        <section id="page-cases" class="page-content">
+            <div class="bg-white border border-gray-200 rounded-3xl p-8 lg:p-12 shadow-sm">
+                <div class="mb-10">
+                    <span class="bg-coinfetti-yellow text-coinfetti-blue px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider" data-i18n="casesTag">
+                        Case Studies
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-coinfetti-blue mt-3" data-i18n="casesTitle">
+                        Proven Transformations & Real Client Cases
+                    </h2>
+                    <p class="text-sm text-gray-600 mt-2" data-i18n="casesSub">How we help business owners gain control, avoid penalties, and unblock growth.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Case 1 -->
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <span class="bg-coinfetti-yellow text-coinfetti-blue text-[11px] font-black px-3 py-1 rounded-md uppercase" data-i18n="c1Badge">
+                                Case 1: Expense Control
+                            </span>
+                            <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mt-4 mb-3" data-i18n="c1Title">"Hidden Expense Leaks"</h3>
+                            <p class="text-xs text-gray-600 mb-2" data-i18n="c1Prob"><strong>Problem:</strong> Strong revenue masked expense leaks, causing month-end cash gaps.</p>
+                            <p class="text-xs text-gray-600 mb-4" data-i18n="c1Act"><strong>Action:</strong> Implemented a developed system to structure expense categories and isolate cost leaks.</p>
+                        </div>
+                        <div class="bg-coinfetti-blue text-white p-4 rounded-xl text-xs font-medium">
+                            <i class="fa-solid fa-circle-check text-coinfetti-yellow mr-1"></i>
+                            <span data-i18n="c1Out"><strong>Outcome:</strong> Client became more aware of business cash flow in and out, budgeting with clarity and precision.</span>
+                        </div>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <span class="bg-coinfetti-yellow text-coinfetti-blue text-[11px] font-black px-3 py-1 rounded-md uppercase" data-i18n="c2Badge">
+                                Case 2: Penalty Prevention
+                            </span>
+                            <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mt-4 mb-3" data-i18n="c2Title">"Backlogged Tax Fines"</h3>
+                            <p class="text-xs text-gray-600 mb-2" data-i18n="c2Prob"><strong>Problem:</strong> Advising null filings during active work caused severe RRA risk.</p>
+                            <p class="text-xs text-gray-600 mb-4" data-i18n="c2Act"><strong>Action:</strong> Audited backlogs, matched EBM to bank, instituted timely filings.</p>
+                        </div>
+                        <div class="bg-coinfetti-blue text-white p-4 rounded-xl text-xs font-medium">
+                            <i class="fa-solid fa-circle-check text-coinfetti-yellow mr-1"></i>
+                            <span data-i18n="c2Out"><strong>Outcome:</strong> Avoided hundreds of thousands in compliance penalties with punctual filings.</span>
+                        </div>
+                    </div>
+
+                    <!-- Case 3 -->
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <span class="bg-coinfetti-yellow text-coinfetti-blue text-[11px] font-black px-3 py-1 rounded-md uppercase" data-i18n="c3Badge">
+                                Case 3: Visa Clearance
+                            </span>
+                            <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mt-4 mb-3" data-i18n="c3Title">"Residency Blockades"</h3>
+                            <p class="text-xs text-gray-600 mb-2" data-i18n="c3Prob"><strong>Problem:</strong> Investor faces visa & permit delays due to uncoordinated tax returns.</p>
+                            <p class="text-xs text-gray-600 mb-4" data-i18n="c3Act"><strong>Action:</strong> Updated past returns, registered MyRRA, secured Tax Clearance.</p>
+                        </div>
+                        <div class="bg-coinfetti-blue text-white p-4 rounded-xl text-xs font-medium">
+                            <i class="fa-solid fa-circle-check text-coinfetti-yellow mr-1"></i>
+                            <span data-i18n="c3Out"><strong>Outcome:</strong> Cleared tax obstacles, enabling smooth work permit renewals.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: 4-STEP ROADMAP & CERTIFICATIONS -->
+        <section id="page-roadmap" class="page-content">
+            <div class="bg-white border border-gray-200 rounded-3xl p-8 lg:p-12 shadow-sm">
+                <div class="mb-10">
+                    <span class="bg-coinfetti-yellow text-coinfetti-blue px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider" data-i18n="processTag">
+                        How We Work
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-coinfetti-blue mt-3" data-i18n="processTitle">
+                        Our 4-Step Engagement Roadmap
+                    </h2>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl relative">
+                        <div class="w-10 h-10 bg-coinfetti-blue text-coinfetti-yellow font-extrabold rounded-full flex items-center justify-center text-lg mb-4">1</div>
+                        <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mb-2" data-i18n="step1Title">Diagnostic</h3>
+                        <p class="text-xs text-gray-600" data-i18n="step1Desc">Analyze prior filings, E-Tax status, MyRRA history, and ledger health to identify risks.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl relative">
+                        <div class="w-10 h-10 bg-coinfetti-blue text-coinfetti-yellow font-extrabold rounded-full flex items-center justify-center text-lg mb-4">2</div>
+                        <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mb-2" data-i18n="step2Title">Architecture</h3>
+                        <p class="text-xs text-gray-600" data-i18n="step2Desc">Configure Chart of Accounts and deploy cloud systems (QuickBooks, Xero, NetSuite).</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl relative">
+                        <div class="w-10 h-10 bg-coinfetti-blue text-coinfetti-yellow font-extrabold rounded-full flex items-center justify-center text-lg mb-4">3</div>
+                        <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mb-2" data-i18n="step3Title">Cleanup</h3>
+                        <p class="text-xs text-gray-600" data-i18n="step3Desc">Clean backlogged transactions, perform bank/cash reconciliations, verify EBM alignment.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl relative">
+                        <div class="w-10 h-10 bg-coinfetti-blue text-coinfetti-yellow font-extrabold rounded-full flex items-center justify-center text-lg mb-4">4</div>
+                        <h3 class="font-heading font-extrabold text-coinfetti-blue text-lg mb-2" data-i18n="step4Title">Growth</h3>
+                        <p class="text-xs text-gray-600" data-i18n="step4Desc">Punctual monthly filings, management reporting, margin tracking, and financial advisory.</p>
+                    </div>
+                </div>
+
+                <!-- CALL TO ACTION BANNER AT BOTTOM OF PROCESS -->
+                <div class="mb-12 bg-coinfetti-blue text-white p-8 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+                    <div>
+                        <span class="bg-coinfetti-yellow text-coinfetti-blue text-[10px] font-black px-2.5 py-1 rounded-full uppercase inline-block mb-2" data-i18n="ctaNextStep">Next Step</span>
+                        <h3 class="font-heading text-xl font-extrabold text-white" data-i18n="ctaHeading">Ready to Transform Your Financial Operations?</h3>
+                        <p class="text-xs text-gray-300 mt-1" data-i18n="ctaSub">Schedule a 30-minute diagnostic session to review your compliance and system setup.</p>
+                    </div>
+                    <a href="https://calendly.com/coinfetti49/30min" target="_blank" rel="noopener noreferrer" class="bg-coinfetti-yellow text-coinfetti-blue hover:bg-coinfetti-yellowHover px-6 py-3.5 rounded-xl font-extrabold text-xs shrink-0 transition-all shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-sm"></i>
+                        <span data-i18n="ctaBtn">Book 30-Min Consultation</span>
+                    </a>
+                </div>
+
+                <!-- CERTIFICATIONS BLOCK -->
+                <div class="pt-8 border-t border-gray-100">
+                    <h3 class="font-heading text-xl font-extrabold text-coinfetti-blue mb-6 text-center" data-i18n="certTitle">Certifications & System Expertise</h3>
+                    <div class="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                        <div class="bg-coinfetti-yellowLight border-2 border-coinfetti-yellow p-6 rounded-2xl text-center">
+                            <i class="fa-solid fa-award text-3xl text-coinfetti-blue mb-3"></i>
+                            <h4 class="font-bold text-coinfetti-blue text-base" data-i18n="cert1Title">Intuit QuickBooks</h4>
+                            <p class="text-xs font-extrabold text-coinfetti-blue mt-1" data-i18n="cert1Sub">Certified Advanced ProAdvisor</p>
+                        </div>
+                        <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl text-center">
+                            <i class="fa-solid fa-certificate text-3xl text-coinfetti-blue mb-3"></i>
+                            <h4 class="font-bold text-coinfetti-blue text-base" data-i18n="cert2Title">Oracle NetSuite</h4>
+                            <p class="text-xs font-extrabold text-coinfetti-blue mt-1" data-i18n="cert2Sub">Certified Financial Associate</p>
+                        </div>
+                        <div class="bg-slate-50 border border-gray-200 p-6 rounded-2xl text-center">
+                            <i class="fa-solid fa-shield-check text-3xl text-coinfetti-blue mb-3"></i>
+                            <h4 class="font-bold text-coinfetti-blue text-base" data-i18n="cert3Title">Xero Accounting</h4>
+                            <p class="text-xs font-extrabold text-coinfetti-blue mt-1" data-i18n="cert3Sub">L2 Certified Professional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: CALL TO ACTION / BOOK CONSULTATION -->
+        <section id="page-contact" class="page-content">
+            <div class="bg-gradient-to-br from-coinfetti-yellow via-yellow-300 to-coinfetti-yellow rounded-3xl p-8 lg:p-12 text-coinfetti-blue shadow-sm">
+                <div class="max-w-3xl mb-10">
+                    <span class="bg-coinfetti-blue text-coinfetti-yellow text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider mb-4 inline-block" data-i18n="contactTag">
+                        Get Started Today
+                    </span>
+                    <h2 class="text-3xl sm:text-5xl font-black text-coinfetti-blue tracking-tight leading-tight mb-4" data-i18n="contactTitle">
+                        Ready for Clarity, Structure & Calm in Your Accounting?
+                    </h2>
+                    <p class="text-coinfetti-darkBlue text-lg font-medium mb-6" data-i18n="contactSub">
+                        Let Coinfetti handle your tax compliance, cloud bookkeeping, and financial architecture while you focus on scaling your enterprise.
+                    </p>
+
+                    <a href="https://calendly.com/coinfetti49/30min" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 bg-coinfetti-blue text-coinfetti-yellow hover:bg-coinfetti-darkBlue px-8 py-4 rounded-2xl font-black text-base shadow-lg transition-all hover:scale-105">
+                        <i class="fa-solid fa-calendar-check text-xl"></i>
+                        <span data-i18n="contactCalendlyBtn">Book 30-Min Consultation on Calendly</span>
+                    </a>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <!-- Calendly Direct -->
+                    <a href="https://calendly.com/coinfetti49/30min" target="_blank" rel="noopener noreferrer" class="bg-coinfetti-blue text-white p-6 rounded-2xl flex items-center gap-4 hover:bg-coinfetti-darkBlue transition-all shadow-md group">
+                        <div class="w-12 h-12 bg-coinfetti-yellow text-coinfetti-blue rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-extrabold text-coinfetti-yellow uppercase block" data-i18n="cardOnlineBooking">Online Booking</span>
+                            <strong class="text-sm font-bold text-white">Calendly / 30min</strong>
+                        </div>
+                    </a>
+
+                    <!-- LinkedIn -->
+                    <a href="https://linkedin.com/company/coinfettiltd" target="_blank" rel="noopener noreferrer" class="bg-white text-coinfetti-blue p-6 rounded-2xl flex items-center gap-4 hover:shadow-lg transition-all group">
+                        <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fa-brands fa-linkedin"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-extrabold text-gray-500 uppercase block" data-i18n="cardLinkedIn">Official LinkedIn</span>
+                            <strong class="text-sm font-bold text-coinfetti-blue">coinfettiltd</strong>
+                        </div>
+                    </a>
+
+                    <!-- Email -->
+                    <a href="mailto:coinfetti49@gmail.com" class="bg-white text-coinfetti-blue p-6 rounded-2xl flex items-center gap-4 hover:shadow-lg transition-all group">
+                        <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-extrabold text-gray-500 uppercase block" data-i18n="cardEmail">Direct Email</span>
+                            <strong class="text-sm font-bold text-coinfetti-blue">coinfetti49@gmail.com</strong>
+                        </div>
+                    </a>
+
+                    <!-- Phone -->
+                    <a href="https://wa.me/250793898027" target="_blank" rel="noopener noreferrer" class="bg-white text-coinfetti-blue p-6 rounded-2xl flex items-center gap-4 hover:shadow-lg transition-all group">
+                        <div class="w-12 h-12 bg-coinfetti-blue text-coinfetti-yellow rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-extrabold text-gray-500 uppercase block" data-i18n="cardPhone">Phone / WhatsApp</span>
+                            <strong class="text-sm font-bold text-coinfetti-blue">+250 793 898 027</strong>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="pt-6 border-t border-coinfetti-blue/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-bold text-coinfetti-darkBlue">
+                    <span data-i18n="footerLocation">© Coinfetti Accounting & Business Services • Kigali, Rwanda</span>
+                    <span class="uppercase tracking-wider" data-i18n="footerTagline">Financial Advisory & System Architecture</span>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Global Footer -->
-    <footer class="bg-[#063c52] text-stone-500 py-32 text-center text-[11px] uppercase tracking-[0.5em] mt-24 border-t-8 border-[#fff975] italic">
-        <div class="w-24 h-24 bg-white/10 rounded-[2.5rem] flex items-center justify-center text-4xl font-black text-[#fff975] italic mb-10 mx-auto border-2 border-[#fff975]/30 shadow-2xl italic">c</div>
-        <p class="text-[#fff975] font-black italic text-xl tracking-tight normal-case mb-12 italic italic leading-relaxed">"Your Coins Called — They Want a Little Confetti !!!"</p>
-        <div class="mb-10 font-black text-white text-5xl tracking-tighter brand-text lowercase">coinfetti &copy; 2026</div>
-        <p class="max-w-2xl mx-auto opacity-40 mb-12 px-10 text-white tracking-[0.2em] italic italic leading-loose">Global Financial Storytelling. Digital Bookkeeping. Excellence for International SMEs.</p>
-        <p class="text-[#fff975]/90 tracking-[0.3em] font-black text-sm italic">+250 793 898 027 | sales@coinfetti.online</p>
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+            <div class="flex items-center gap-2">
+                <img src="gemini_generated_image_b1cpaab1cpaab1cp-removebg-preview-edited.webp" alt="Coinfetti Logo" class="w-7 h-7 object-contain" onerror="this.onerror=null; this.src='https://placehold.co/100x100/ffde59/00167a?text=Coinfetti';">
+                <span class="font-bold text-coinfetti-blue" data-i18n="footerLocation">Coinfetti Accounting & Business Services</span>
+            </div>
+            <p>Direct Consultation: <a href="https://calendly.com/coinfetti49/30min" target="_blank" class="text-coinfetti-blue font-bold underline">calendly.com/coinfetti49/30min</a></p>
+        </div>
     </footer>
 
     <script>
-        // NAVIGATION ENGINE
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
-            const targetSection = document.getElementById(viewId + '-view');
-            if(targetSection) targetSection.classList.add('active');
-            
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active-nav'));
-            
-            const mapping = { 'home':'nav-home', 'about':'nav-about', 'meet-mum':'nav-about', 'posts':'nav-posts', 'pricing':'nav-pricing', 'chat':'nav-chat' };
-            const navBtn = document.getElementById(mapping[viewId]);
-            if (navBtn) navBtn.classList.add('active-nav');
-            
-            window.scrollTo(0,0);
-        }
+        /* PAGE / TAB SWITCHING LOGIC */
+        function switchTab(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(p => p.classList.remove('active-page'));
 
-        // TAB ENGINE (Global Services)
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            const target = document.getElementById(tabId);
-            if(target) target.classList.add('active');
-            
-            document.querySelectorAll('#tabs-nav button').forEach(b => {
-                b.classList.remove('bg-[#063c52]', 'text-white', 'shadow-2xl');
-                b.classList.add('text-stone-400');
-            });
-            btn.classList.remove('text-stone-400');
-            btn.classList.add('bg-[#063c52]', 'text-white', 'shadow-2xl');
-        }
+            // Deactivate all desktop tabs
+            const desktopTabs = document.querySelectorAll('nav .nav-tab');
+            desktopTabs.forEach(t => t.classList.remove('active'));
 
-        // PRICING ENGINE
-        document.addEventListener('DOMContentLoaded', () => {
-            const radioInputs = document.querySelectorAll('input[name="financial"]');
-            const checkboxInputs = document.querySelectorAll('input[type="checkbox"]');
-            const hourlySelect = document.getElementById('hourly-service');
-            const hourlyRange = document.getElementById('hourly-range');
-            const hoursValDisplay = document.getElementById('hours-val');
-            const hourlySubtotalDisplay = document.getElementById('hourly-subtotal');
-            const totalDisplay = document.getElementById('total-cost');
-            const downloadBtn = document.getElementById('download-btn');
-            
-            const ctx = document.getElementById('costBreakdownChart').getContext('2d');
-            let breakdownChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#063c52', '#fff975', '#166a87', '#252120', '#e5e5e5'], borderWidth: 10, borderColor: '#ffffff', hoverOffset: 30 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#063c52', font: { weight: '900' }, padding: 25, usePointStyle: true } } }, cutout: '80%', animation: { animateScale: true, animateRotate: true } }
-            });
+            // Deactivate all mobile tabs
+            const mobileTabs = document.querySelectorAll('.no-scrollbar .nav-tab');
+            mobileTabs.forEach(t => t.classList.remove('active'));
 
-            function calculateTotals() {
-                let total = 0;
-                let chartLabels = [];
-                let chartData = [];
-
-                radioInputs.forEach(i => { if (i.checked) { total += parseFloat(i.value); chartLabels.push(i.getAttribute('data-label')); chartData.push(parseFloat(i.value)); } });
-                checkboxInputs.forEach(i => { if (i.checked) { total += parseFloat(i.value); chartLabels.push(i.getAttribute('data-label')); chartData.push(parseFloat(i.value)); } });
-
-                const hRate = parseFloat(hourlySelect.value) || 0;
-                const hHours = parseInt(hourlyRange.value) || 0;
-                const hTotal = hRate * hHours;
-                
-                hoursValDisplay.innerText = hHours + ' hrs';
-                hourlySubtotalDisplay.innerText = '$' + hTotal;
-                
-                if (hTotal > 0) { total += hTotal; chartLabels.push('Projected Work'); chartData.push(hTotal); }
-
-                totalDisplay.innerText = '$' + total;
-                
-                if (total > 0) {
-                    breakdownChart.data.labels = chartLabels;
-                    breakdownChart.data.datasets[0].data = chartData;
-                    breakdownChart.update();
-                    downloadBtn.classList.remove('hidden');
-                    downloadBtn.classList.add('flex');
-                } else {
-                    breakdownChart.data.labels = [];
-                    breakdownChart.data.datasets[0].data = [];
-                    breakdownChart.update();
-                    downloadBtn.classList.add('hidden');
-                    downloadBtn.classList.remove('flex');
-                }
+            // Show selected page
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.add('active-page');
             }
 
-            radioInputs.forEach(i => i.addEventListener('change', calculateTotals));
-            checkboxInputs.forEach(i => i.addEventListener('change', calculateTotals));
-            hourlySelect.addEventListener('change', calculateTotals);
-            hourlyRange.addEventListener('input', calculateTotals);
+            // Activate corresponding desktop button
+            const targetDesktopBtn = document.getElementById('tab-btn-' + pageId);
+            if (targetDesktopBtn) {
+                targetDesktopBtn.classList.add('active');
+            }
 
-            // PDF ENGINE
-            window.downloadQuote = function() {
-                let items = [];
-                let t = 0;
-                radioInputs.forEach(i => { if (i.checked) { items.push({ n: i.getAttribute('data-label'), p: parseFloat(i.value) }); t += parseFloat(i.value); } });
-                checkboxInputs.forEach(i => { if (i.checked) { items.push({ n: i.getAttribute('data-label'), p: parseFloat(i.value) }); t += parseFloat(i.value); } });
-                const hVal = parseInt(hourlyRange.value);
-                if (hVal > 0) { const ht = parseFloat(hourlySelect.value) * hVal; items.push({ n: `Hourly Work (${hVal} hrs)`, p: ht }); t += ht; }
+            // Activate corresponding mobile button
+            const targetMobileBtn = document.getElementById('mtab-btn-' + pageId);
+            if (targetMobileBtn) {
+                targetMobileBtn.classList.add('active');
+            }
 
-                const rwfTotal = t * 1350;
-                const d = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                const rows = items.map(i => `<tr style="border-bottom:1px solid #eee;"><td style="padding:15px 0;font-family:sans-serif;">${i.n}</td><td style="text-align:right;font-weight:900;font-family:sans-serif;">$${i.p.toFixed(2)}</td></tr>`).join('');
+            // Scroll smoothly back to top of container
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-                const pw = window.open('', '_blank');
-                pw.document.write(`
-                    <html><head><title>coinfetti_quote</title><style>
-                        body { font-family: sans-serif; color: #063c52; padding: 40px; max-width: 800px; margin: 0 auto; }
-                        .h { display: flex; justify-content: space-between; border-bottom: 4px solid #063c52; padding-bottom: 20px; margin-bottom: 40px; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-                        th { text-align: left; border-bottom: 2px solid #063c52; padding: 10px 0; font-size: 12px; text-transform:uppercase; }
-                        .total { font-size: 28px; font-weight: 900; }
-                        .rwf { background: #fff975; padding: 20px; border-radius: 15px; font-weight: 900; margin-top: 20px; border: 2px solid #063c52; }
-                        .note { font-size: 11px; color: #666; margin-top: 40px; font-style: italic; border-top:1px solid #eee; padding-top:20px; }
-                    </style></head><body>
-                        <div class="h"><div><h1 style="margin:0; font-style:italic;">coinfetti</h1><div>your coin translator</div></div>
-                        <div style="text-align:right; font-weight:bold;">sales@coinfetti.online<br>+250 793 898 027</div></div>
-                        <h2>Projected Service Estimate</h2><div>Generated: ${d}</div>
-                        <table><thead><tr><th>Description</th><th style="text-align:right;">Fee (USD)</th></tr></thead>
-                        <tbody>${rows}<tr><td class="total">Total Quote</td><td class="total" style="text-align:right;">$${t.toFixed(2)}</td></tr></tbody></table>
-                        <div class="rwf">Equivalent in RWF: ${rwfTotal.toLocaleString()} RWF*</div>
-                        <p class="note">*Estimated RWF rate: 1 USD ≈ 1,350 RWF. Final billing based on BNR daily rate and volume.</p>
-                    </body></html>
-                `);
-                pw.document.close();
-                setTimeout(() => { pw.print(); }, 500);
-            };
+        /* INTERNATIONALIZATION / ARABIC LANGUAGE TOGGLE */
+        let currentLang = 'en';
 
-            calculateTotals();
-        });
+        const i18n = {
+            en: {
+                brandName: 'COINFETTI',
+                brandSub: 'Accounting & Advisory',
+                navOverview: 'Overview',
+                navServices: 'Services',
+                navCases: 'Case Studies',
+                navProcess: 'Process',
+                bookConsult: 'Book Consultation',
+
+                heroTag: 'Kigali, Rwanda • International',
+                heroTitle: 'Compliance & Financial Health.\nTwo Sides of the Same Coin.\nBuilt to Endure.',
+                heroSub: 'Are you paying taxes, or paying penalties? High revenue alone doesn’t mean your business is healthy. We give you full regulatory protection and true profitability tracking—so your enterprise remains a thriving going concern.',
+                sideATitle: 'Side A: Compliance & Safety',
+                sideADesc: 'Are you paying taxes or hidden penalties? Prevent compliance bottlenecks before they put your business at risk.',
+                sideBTitle: 'Side B: True Financial Health',
+                sideBDesc: 'Know what it actually costs to generate your revenue, protect your margins, and understand your real profit.',
+                badgeQBO: 'QuickBooks Advanced ProAdvisor',
+                badgeNetSuite: 'Oracle NetSuite Certified',
+                badgeRRA: 'RRA & E-Tax Specialists',
+                btnConsult: 'Schedule Consultation Call',
+                btnExplore: 'Explore Solutions',
+
+                servicesTag: 'Executive Practice Areas',
+                servicesTitle: 'Comprehensive Financial & Compliance Solutions',
+                servicesSub: 'End-to-end accounting governance, tax safety, and cloud system architecture built to protect and scale your enterprise.',
+                p1Title: 'Tax & Regulatory Compliance',
+                p1Sub: 'RRA, E-Tax & MyRRA Governance',
+                p1Desc: 'Full-scope corporate tax management and regulatory protection. We manage CIT, IQP, VAT, PAYE, WHT, district property taxes, and EBM v2 reconciliations to ensure complete compliance and eliminate penalty exposure.',
+                p1Tag1: 'Income & Corporate Taxes',
+                p1Tag2: 'Indirect & Payroll Filings',
+                p1Tag3: 'District & Property Taxes',
+
+                p2Title: 'Bookkeeping & Financial Close',
+                p2Sub: 'QuickBooks Standard & Financial Governance',
+                p2Desc: 'Complete day-to-day bookkeeping, multi-currency accounting, bank/sales reconciliations, and structured month-end closes. QuickBooks is provided as our standard bookkeeping platform, with seamless tier upgrades or custom ERP management available.',
+                p2Tag1: 'QuickBooks Standard',
+                p2Tag2: 'Bank & EBM Reconciliations',
+                p2Tag3: 'Month-End Statements',
+
+                p3Title: 'ERP System Architecture',
+                p3Sub: 'System Integration & Workflow Setup',
+                p3Desc: 'One-time specialized setup for expanding organizations. We structure custom Chart of Accounts, opening balance migrations, bank rules, and multi-currency workflows across QuickBooks, Xero, Tally, and NetSuite ERP.',
+                p3Tag1: 'Chart of Accounts Mapping',
+                p3Tag2: 'Cloud ERP Setup',
+                p3Tag3: 'Workflow Automation',
+
+                p4Title: 'Entity Onboarding & Advisory',
+                p4Sub: 'Corporate Advisory, Filings & Clearances',
+                p4Desc: 'Structured setup for local firms and foreign investors. Includes business entity registration support, E-Tax and MyRRA account creation, EBM v2 registration, annual return filings, and obtaining official Tax Clearance Certificates.',
+                p4Tag1: 'E-Tax & MyRRA Onboarding',
+                p4Tag2: 'Tax Clearance Certificates',
+                p4Tag3: 'Annual Return Filings',
+
+                techTitle: 'Cloud & ERP Platforms Supported',
+                qboBadge: 'Our Primary Standard',
+                qboTitle: 'QuickBooks Online',
+                qboDesc: 'Provided as our standard bookkeeping platform. Upgrades to higher QBO tiers available anytime as your team grows.',
+                xeroBadge: 'Fully Managed',
+                xeroTitle: 'Xero & Tally',
+                xeroDesc: 'We manage, set up, and can handle/provide official software subscriptions directly for your team.',
+                customBadge: 'Other Systems',
+                customTitle: 'Custom / Other Systems',
+                customDesc: 'We review system feasibility honestly. If supported, we manage reconciliations and setup.',
+                netsuiteBadge: 'Enterprise ERP',
+                netsuiteTitle: 'Oracle NetSuite',
+                netsuiteDesc: 'Full enterprise ERP setup via trusted partners with localized pricing for larger African organizations.',
+
+                casesTag: 'Case Studies',
+                casesTitle: 'Proven Transformations & Real Client Cases',
+                casesSub: 'How we help business owners gain control, avoid penalties, and unblock growth.',
+                c1Badge: 'Case 1: Expense Control',
+                c1Title: '"Hidden Expense Leaks"',
+                c1Prob: 'Problem: Strong revenue masked expense leaks, causing month-end cash gaps.',
+                c1Act: 'Action: Implemented a developed system to structure expense categories and isolate cost leaks.',
+                c1Out: 'Outcome: Client became more aware of business cash flow in and out, budgeting with clarity and precision.',
+
+                c2Badge: 'Case 2: Penalty Prevention',
+                c2Title: '"Backlogged Tax Fines"',
+                c2Prob: 'Problem: Advising null filings during active work caused severe RRA risk.',
+                c2Act: 'Action: Audited backlogs, matched EBM to bank, instituted timely filings.',
+                c2Out: 'Outcome: Avoided hundreds of thousands in compliance penalties with punctual filings.',
+
+                c3Badge: 'Case 3: Visa Clearance',
+                c3Title: '"Residency Blockades"',
+                c3Prob: 'Problem: Investor faces visa & permit delays due to uncoordinated tax returns.',
+                c3Act: 'Action: Updated past returns, registered MyRRA, secured Tax Clearance.',
+                c3Out: 'Outcome: Cleared tax obstacles, enabling smooth work permit renewals.',
+
+                processTag: 'How We Work',
+                processTitle: 'Our 4-Step Engagement Roadmap',
+                step1Title: 'Diagnostic',
+                step1Desc: 'Analyze prior filings, E-Tax status, MyRRA history, and ledger health to identify risks.',
+                step2Title: 'Architecture',
+                step2Desc: 'Configure Chart of Accounts and deploy cloud systems (QuickBooks, Xero, NetSuite).',
+                step3Title: 'Cleanup',
+                step3Desc: 'Clean backlogged transactions, perform bank/cash reconciliations, verify EBM alignment.',
+                step4Title: 'Growth',
+                step4Desc: 'Punctual monthly filings, management reporting, margin tracking, and financial advisory.',
+                ctaNextStep: 'Next Step',
+                ctaHeading: 'Ready to Transform Your Financial Operations?',
+                ctaSub: 'Schedule a 30-minute diagnostic session to review your compliance and system setup.',
+                ctaBtn: 'Book 30-Min Consultation',
+
+                certTitle: 'Certifications & System Expertise',
+                cert1Title: 'Intuit QuickBooks',
+                cert1Sub: 'Certified Advanced ProAdvisor',
+                cert2Title: 'Oracle NetSuite',
+                cert2Sub: 'Certified Financial Associate',
+                cert3Title: 'Xero Accounting',
+                cert3Sub: 'L2 Certified Professional',
+
+                contactTag: 'Get Started Today',
+                contactTitle: 'Ready for Clarity, Structure & Calm in Your Accounting?',
+                contactSub: 'Let Coinfetti handle your tax compliance, cloud bookkeeping, and financial architecture while you focus on scaling your enterprise.',
+                contactCalendlyBtn: 'Book 30-Min Consultation on Calendly',
+                cardOnlineBooking: 'Online Booking',
+                cardLinkedIn: 'Official LinkedIn',
+                cardEmail: 'Direct Email',
+                cardPhone: 'Phone / WhatsApp',
+                footerLocation: '© Coinfetti Accounting & Business Services • Kigali, Rwanda',
+                footerTagline: 'Financial Advisory & System Architecture'
+            },
+            ar: {
+                brandName: 'COINFETTI',
+                brandSub: 'للمحاسبة والاستشارات',
+                navOverview: 'نظرة عامة',
+                navServices: 'الخدمات',
+                navCases: 'دراسات الحالة',
+                navProcess: 'خطة العمل',
+                bookConsult: 'حجز استشارة',
+
+                heroTag: 'كيغالي، رواندا • خدمات دولية',
+                heroTitle: 'الامتثال الضريبي والسلامة المالية.\nوجهان لعملة واحدة.\nلبناء مؤسسات تدوم.',
+                heroSub: 'هل تسدد الضرائب المستحقة أم تدفع غرامات تجنبها ممكن؟ نمو المبيعات وحده لا يعني أن عملك في أمان. نحن نمنحك الحماية التنظيمية الكاملة والرؤية الحقيقية لربحيتك—لتضمن استمرارية مؤسستك ونموها بثبات.',
+                sideATitle: 'الجانب الأول: الأمان والامتثال',
+                sideADesc: 'هل تسدد ضرائبك أم غرامات خفية؟ تجنب عقبات الامتثال قبل أن تعرض استقرار أعمالك للمخاطر.',
+                sideBTitle: 'الجانب الثاني: الصحة المالية الحقيقية',
+                sideBDesc: 'اعرف التكلفة الفعلية لتوليد إيراداتك، واحمِ هوامش أرباحك، واكتشف الحقيقة الكاملة لأرقامك.',
+                badgeQBO: 'QuickBooks Advanced ProAdvisor',
+                badgeNetSuite: 'Oracle NetSuite Certified',
+                badgeRRA: 'متخصصون في RRA & E-Tax',
+                btnConsult: 'جدولة مكالمة استشارية',
+                btnExplore: 'استكشف حلولنا',
+
+                servicesTag: 'مجالات الممارسة المتقدمة',
+                servicesTitle: 'حلول مالية وضريبية شمولية للمؤسسات',
+                servicesSub: 'حوكمة محاسبية متكاملة، وحماية ضريبية، وبنية سحابية صممت لتمكين عملك وحمايته.',
+                p1Title: 'الامتثال الضريبي والتنظيمي',
+                p1Sub: 'حوكمة RRA و E-Tax و MyRRA',
+                p1Desc: 'إدارة كاملة لضرائب الشركات والحماية التنظيمية. ندير ضريبة أرباح الشركات (CIT)، الإقرارات الربع سنوية (IQP)، ضريبة القيمة المضافة (VAT)، ضريبة الدخل والخصم من المنبع (PAYE & WHT)، ضرائب العقارات والأراضي المحلية، ومطابقات الفواتير الإلكترونية EBM v2 لضمان الامتثال التام وإلغاء الغرامات.',
+                p1Tag1: 'ضرائب أرباح الشركات والدخل',
+                p1Tag2: 'إقرارات الرواتب والضرائب غير المباشرة',
+                p1Tag3: 'ضرائب العقارات والأراضي المحلية',
+
+                p2Title: 'المحاسبة وإغلاق الحسابات',
+                p2Sub: 'إدارة المعيار القياسي في QuickBooks',
+                p2Desc: 'مسك دفاتر يومي شامل، محاسبة متعددة العملات، مطابقات البنوك والمبيعات، وإغلاق شهري منظم. نعتمد QuickBooks كمنصتنا القياسية لمسك الدفاتر، مع إمكانية الترقية السلسة للباقات الأعلى أو إدارة أنظمة ERP الخاصة بك.',
+                p2Tag1: 'نظام QuickBooks القياسي',
+                p2Tag2: 'مطابقات البنوك وفواتير EBM',
+                p2Tag3: 'التقارير والإغلاقات الشهرية',
+
+                p3Title: 'تصميم وهندسة أنظمة ERP',
+                p3Sub: 'ربط الأنظمة وإعداد دورات العمل',
+                p3Desc: 'إعداد وتصميم متقدم للمؤسسات المتنامية. نقوم بتصميم شجرة الحسابات، ترحيل الأرصدة الافتتاحية، قواعد البنوك، ودورات العمل متعددة العملات عبر QuickBooks و Xero و Tally و Oracle NetSuite.',
+                p3Tag1: 'تصميم شجرة الحسابات',
+                p3Tag2: 'إعداد أنظمة ERP السحابية',
+                p3Tag3: 'أتمتة دورات العمل',
+
+                p4Title: 'تأسيس الشركات والاستشارات',
+                p4Sub: 'الاستشارات المؤسسية والاعتمادات الضريبية',
+                p4Desc: 'تأسيس هيكلي للشركات المحلية والمستثمرين الأجانب. يشمل دعم تسجيل الشركات، إنشاء حسابات E-Tax و MyRRA، تسجيل الفواتير الإلكترونية EBM v2، تقديم الإقرارات السنوية، واستخراج شهادات براءة الذمة الضريبية.',
+                p4Tag1: 'التسجيل في E-Tax & MyRRA',
+                p4Tag2: 'شهادات براءة الذمة الضريبية',
+                p4Tag3: 'تقديم التقارير السنوية',
+
+                techTitle: 'الأنظمة المحاسبية والسحابية المدعومة',
+                qboBadge: 'معيارنا الأساسي',
+                qboTitle: 'QuickBooks Online',
+                qboDesc: 'متاح كمنصتنا القياسية لمسك الدفاتر. يمكن الترقية لباقات أعلى في أي وقت مع نمو فريقك.',
+                xeroBadge: 'إدارة كاملة',
+                xeroTitle: 'Xero & Tally',
+                xeroDesc: 'نقوم بإدارتها وإعدادها وتوفير الاشتراكات الرسمية مباشرة لفريقك.',
+                customBadge: 'أنظمة مخصصة وأخرى',
+                customTitle: 'أنظمة مخصصة وأخرى',
+                customDesc: 'نراجع مدى ملاءمة النظام بكل شفافية. إذا كان مدعوماً، ندير المطابقات والإعداد.',
+                netsuiteBadge: 'أنظمة المؤسسات الكبرى',
+                netsuiteTitle: 'Oracle NetSuite',
+                netsuiteDesc: 'إعداد شامل لنظام ERP بالتعاون مع شركاء معتمدين وأسعار مخصصة للشركات في أفريقيا.',
+
+                casesTag: 'دراسات الحالة',
+                casesTitle: 'التحولات والمشاريع الناجحة',
+                casesSub: 'كيف نساعد أصحاب الأعمال في السيطرة على أمورهم المالية، تجنب الغرامات، وتمهيد الطريق للنمو.',
+                c1Badge: 'الحالة 1: السيطرة على المصاريف',
+                c1Title: '"تسرب المصاريف الخفية"',
+                c1Prob: 'المشكلة: الإيرادات المرتفعة كانت تخفي تسرباً في المصاريف، مما يسبب عجزاً في السيولة النقدية بنهاية الشهر.',
+                c1Act: 'الإجراء: تطبيق نظام مخصص لتصنيف المصاريف وتحديد نقاط التسرب المالي بدقة.',
+                c1Out: 'النتيجة: أصبح العميل أكثر وعياً بحركة التدفقات النقدية الداخلة والخارجة، مع القدرة على الميزانية بوضوح.',
+
+                c2Badge: 'الحالة 2: الوقاية من الغرامات',
+                c2Title: '"غرامات الضرائب المتراكمة"',
+                c2Prob: 'المشكلة: تقديم إقرارات صفرية أثناء وجود نشاط فعلي كان يعرض الشركة لمخاطر ضريبية جسيمة لدى RRA.',
+                c2Act: 'الإجراء: تدقيق المتأخرات، مطابقة الفواتير الإلكترونية EBM مع البنك، والالتزام بتقديم الإقرارات في مواعيدها.',
+                c2Out: 'النتيجة: تجنب مئات الآلاف من الغرامات الضريبية بفضل تقديم الإقرارات المنتظم والدقيق.',
+
+                c3Badge: 'الحالة 3: التراخيص والعمل',
+                c3Title: '"عقبات إقامات المستثمرين"',
+                c3Prob: 'المشكلة: مواجهة المستثمر لتأخيرات في تصاريح العمل والإقامة بسبب عدم انتظام الإقرارات الضريبية.',
+                c3Act: 'الإجراء: تحديث الإقرارات السابقة، التسجيل في MyRRA، واستخراج شهادة براءة الذمة الضريبية.',
+                c3Out: 'النتيجة: إزالة كافة العقبات الضريبية وتجديد تصاريح العمل والإقامة بكل سهولة.',
+
+                processTag: 'كيف نعمل',
+                processTitle: 'خطة العمل في 4 خطوات',
+                step1Title: 'التشخيص والدراسة',
+                step1Desc: 'تحليل الإقرارات السابقة، حالة E-Tax، سجل MyRRA، وصحة الدفاتر لتحديد المخاطر.',
+                step2Title: 'التأسيس والتصميم',
+                step2Desc: 'تصميم شجرة الحسابات وإعداد الأنظمة السحابية (QuickBooks, Xero, Oracle NetSuite).',
+                step3Title: 'التنظيف والمطابقة',
+                step3Desc: 'معالجة المعاملات المتأخرة، مطابقة البنوك والنقدية، والتحقق من فواتير EBM.',
+                step4Title: 'النمو والمتابعة',
+                step4Desc: 'تقديم الإقرارات بمواعيدها، التقارير الإدارية، تتبع الهوامش، والاستشارات المستمرة.',
+                ctaNextStep: 'الخطوة التالية',
+                ctaHeading: 'هل أنت جاهز لتطوير عملياتك المالية؟',
+                ctaSub: 'احجز جلسة تشخيصية لمدة 30 دقيقة لمراجعة موقفك الضريبي ونظامك المحاسبي.',
+                ctaBtn: 'احجز استشارة لمدة 30 دقيقة',
+
+                certTitle: 'الشهادات والخبرات المعتمدة',
+                cert1Title: 'Intuit QuickBooks',
+                cert1Sub: 'Certified Advanced ProAdvisor',
+                cert2Title: 'Oracle NetSuite',
+                cert2Sub: 'Certified Financial Associate',
+                cert3Title: 'Xero Accounting',
+                cert3Sub: 'L2 Certified Professional',
+
+                contactTag: 'ابدأ اليوم',
+                contactTitle: 'هل أنت جاهز للوضوح والهيكلة والاطمئنان في حساباتك؟',
+                contactSub: 'دع COINFETTI تتولى الامتثال الضريبي، المحاسبة السحابية، وهندسة نظامك المالي لتركز أنت على نمو أعمالك.',
+                contactCalendlyBtn: 'احجز استشارة 30 دقيقة عبر Calendly',
+                cardOnlineBooking: 'الحجز عبر الإنترنت',
+                cardLinkedIn: 'صفحة LinkedIn الرسمية',
+                cardEmail: 'البريد الإلكتروني المباشر',
+                cardPhone: 'الهاتف / WhatsApp',
+                footerLocation: '© COINFETTI للمحاسبة وخدمات الأعمال • كيغالي، رواندا',
+                footerTagline: 'الاستشارات المالية وهندسة الأنظمة'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            
+            // Update document direction
+            document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', currentLang);
+
+            // Toggle language button text
+            const langToggleText = document.getElementById('lang-toggle-text');
+            if (langToggleText) {
+                langToggleText.innerText = currentLang === 'en' ? 'العربية' : 'English';
+            }
+
+            // Translate elements with data-i18n attribute
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[currentLang] && i18n[currentLang][key]) {
+                    const textValue = i18n[currentLang][key];
+                    
+                    // Check if node contains bold text inside problem/action
+                    if (el.children.length > 0 && el.querySelector('strong')) {
+                        const strongText = el.querySelector('strong').innerText;
+                        el.innerHTML = `<strong>${strongText}</strong> ${textValue.replace(/^(Problem:|Action:|Outcome:|المشكلة:|الإجراء:|النتيجة:)\s*/i, '')}`;
+                    } else if (textValue.includes('\n')) {
+                        el.innerHTML = textValue.replace(/\n/g, '<br>');
+                    } else {
+                        el.innerText = textValue;
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
